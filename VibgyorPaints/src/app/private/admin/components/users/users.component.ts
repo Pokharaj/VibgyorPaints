@@ -24,8 +24,6 @@ export class UsersComponent implements OnInit, OnDestroy {
   userRequestDataSource: MatTableDataSource<User>;
 
   users: User[];
-  userKeys: string[];
-  userRequestKeys: string[];
   subscriptions: Subscription[];
 
   constructor(
@@ -44,28 +42,17 @@ export class UsersComponent implements OnInit, OnDestroy {
    * Call users service and load data
    */
   loadData(): void {
-    const sub = this.userService.getData('users').subscribe(data => {
-      this.users = [];
-      this.userKeys = [];
-      this.userRequestKeys = [];
-
-      for (const [key, value] of Object.entries(data.payload.val())) {
-        // console.log(value);
-        if (value.active || value.isDeleted) {
-          this.userKeys.push(key);
-        } else {
-          this.userRequestKeys.push(key);
-        }
-        this.users.push(value);
-      }
+    this.users = [];
+    const sub = this.userService.getUsers().subscribe((usersList: User[]) => {
+      this.users = usersList;
       this.usersDataSource = new MatTableDataSource<User>(
         this.users.filter(
-          value => value.active === true || value.isDeleted === true
+          value => value.approved === true || value.deleted === true
         )
       );
       this.userRequestDataSource = new MatTableDataSource<User>(
         this.users.filter(
-          value => value.active === false && value.isDeleted === false
+          value => value.approved === false && value.deleted === false
         )
       );
       this.usersDataSource.paginator = this.paginator;
@@ -96,44 +83,39 @@ export class UsersComponent implements OnInit, OnDestroy {
 
   /**
    * Accept user creation request for business customer
-   * @param index position of user key
+   * @param user user to modify
    */
-  accept(index: number) {
-    const uid = this.userRequestKeys[index];
-    this.userService
-      .updateUser(uid, { active: true })
-      .then(() => console.log('Successful'), () => console.log('Error'));
-    this.displayMessage(true);
+  accept(user: User) {
+    user.approved = true;
+    this.userService.update(user).subscribe(() => {
+      this.displayMessage(true);
+    })
   }
 
   /**
    * Reject user creation request for business customer
    * @param index position of user key
    */
-  reject(index: number) {
-    const uid = this.userRequestKeys[index];
-    this.userService
-      .updateUser(uid, { isDeleted: true })
-      .then(() => console.log('Successful'), () => console.log('Error'));
-    this.displayMessage(false);
+  reject(user: User) {
+    user.deleted = true;
+    this.userService.update(user).subscribe(() => {
+      this.displayMessage(false);
+    })
   }
 
   /**
    * Display user details
    * @param index position of user key
    */
-  displayDetails(index: number) {
+  displayDetails(user: User) {
     // console.log(index);
-    this.openDialog(
-      this.userRequestKeys[index],
-      this.userRequestDataSource.data[index]
-    );
+    this.openDialog(user);
   }
 
-  openDialog(uid: string, user: User): void {
+  openDialog(user: User): void {
     const dialogRef = this.dialog.open(UserRequestDetailsComponent, {
       width: '350px',
-      data: { uid, user }
+      data: { user }
     });
 
     const sub = dialogRef.afterClosed().subscribe(result => {
@@ -144,7 +126,7 @@ export class UsersComponent implements OnInit, OnDestroy {
     this.subscriptions.push(sub);
   }
 
-  acceptClick(index: number): void {
+  acceptClick(user: User): void {
     const data = {message: 'Are you sure you want to accept the request', comment: false};
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       width: '300px',
@@ -153,13 +135,13 @@ export class UsersComponent implements OnInit, OnDestroy {
 
     const sub = dialogRef.afterClosed().subscribe(result => {
       if (result.yesclicked) {
-        this.accept(index);
+        this.accept(user);
       }
     });
     this.subscriptions.push(sub);
   }
 
-  rejectClick(index: number): void {
+  rejectClick(user: User): void {
     const data = {message: 'Are you sure you want to reject the request', comment: false};
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       width: '300px',
@@ -168,7 +150,7 @@ export class UsersComponent implements OnInit, OnDestroy {
 
     const sub = dialogRef.afterClosed().subscribe(result => {
       if (result.yesclicked) {
-        this.reject(index);
+        this.reject(user);
       }
     });
     this.subscriptions.push(sub);
@@ -185,5 +167,6 @@ export class UsersComponent implements OnInit, OnDestroy {
         this.snackbar.openSnackBar('Request Rejected', 'Close', 2000);
         break;
     }
+    this.loadData();
   }
 }

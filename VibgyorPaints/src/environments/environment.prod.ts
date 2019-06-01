@@ -8,5 +8,6 @@ export const environment = {
     storageBucket: 'test13-a4679.appspot.com',
     messagingSenderId: '704719323291'
   },
-  users: ['admin', 'B2C', 'B2B']
+  users: ['admin', 'B2C', 'B2B'],
+  DATA_URL: 'server/api/v1/'
 };

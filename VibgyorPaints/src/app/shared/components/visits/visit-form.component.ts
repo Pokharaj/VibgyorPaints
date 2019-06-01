@@ -130,7 +130,7 @@ export class VisitFormComponent implements OnInit, OnDestroy {
     const schDate = new Date(value.schDate);
     return {
       canceled : false,
-      userEmail : this.user.emailid,
+      userEmail : this.user.email,
       rejected : false,
       requestDate : (+date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear(),
       visitDate : (+schDate.getMonth() + 1) + '/' + schDate.getDate() + '/' + schDate.getFullYear(),

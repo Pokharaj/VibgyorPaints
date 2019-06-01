@@ -90,49 +90,57 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   googleLogin() {
-    firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider())
-      .then(res => {
-        const name = Object.values(res.additionalUserInfo.profile);
-        const user = {
-          firstname: name[4],
-          lastname: name[6],
-          phone: +res.user.phoneNumber,
-          location: '',
-          type: USER.B2C,
-          isDeleted: false,
-          active: true,
-          emailid: res.user.email,
-        } as User;
-        if (res.additionalUserInfo.isNewUser) {
-          this.userservice.createNewUser(res, user);
-        }
-        this.afterSteps(name[4], user, res.user.uid);
-      });
+    // firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider())
+    //   .then(res => {
+    //     const name = Object.values(res.additionalUserInfo.profile);
+    //     const user = {
+    //       firstname: name[4],
+    //       lastname: name[6],
+    //       phone: +res.user.phoneNumber,
+    //       location: '',
+    //       type: USER.B2C,
+    //       isDeleted: false,
+    //       active: true,
+    //       emailid: res.user.email,
+    //     } as User;
+    //     if (res.additionalUserInfo.isNewUser) {
+    //       this.userservice.createNewUser(res, user);
+    //     }
+    //     this.afterSteps(name[4], user, res.user.uid);
+    //   });
   }
 
   logIn() {
     this.validation = this.genericValidator.validate(this.form.controls.LogInForm as FormGroup, true);
     if (Object.keys(this.validation).length === 0) {
-      firebase.auth().signInWithEmailAndPassword(this.form.controls.LogInForm.value.username,
-        this.form.controls.LogInForm.value.passwordlog)
-        .then(res => {
-          this.userservice.getUserData(res.user.uid).subscribe(resp => {
-            if (resp.active) {
-              this.afterSteps(resp.firstname, resp, res.user.uid);
-            } else {
-              this.validation.passwordlog = 'Account activation pending';
-            }
-          });
-        })
-        .catch((err) => {
-          if (err.code.includes('invalid-email')) {
-            this.validation.username = 'Please enter a valid Email Id';
-          } else if (err.code.includes('user-not-found')) {
-            this.validation.username = 'This Email Id is not registered';
-          } else if (err.code.includes('wrong-password')) {
-            this.validation.passwordlog = 'Invalid Email Id or Password';
+      this.userservice.login(this.form.controls.LogInForm.value.username,
+        this.form.controls.LogInForm.value.passwordlog).subscribe((user: User) => {
+          if(user != null || user != undefined) {
+            this.afterSteps(user);
+          } else {
+            this.validation.passwordlog = 'Invalid Username or password';
           }
         });
+      // firebase.auth().signInWithEmailAndPassword(this.form.controls.LogInForm.value.username,
+      //   this.form.controls.LogInForm.value.passwordlog)
+      //   .then(res => {
+      //     this.userservice.getUserData(res.user.uid).subscribe(resp => {
+      //       if (resp.active) {
+      //         this.afterSteps(resp.firstname, resp, res.user.uid);
+      //       } else {
+      //         this.validation.passwordlog = 'Account activation pending';
+      //       }
+      //     });
+      //   })
+      //   .catch((err) => {
+      //     if (err.code.includes('invalid-email')) {
+      //       this.validation.username = 'Please enter a valid Email Id';
+      //     } else if (err.code.includes('user-not-found')) {
+      //       this.validation.username = 'This Email Id is not registered';
+      //     } else if (err.code.includes('wrong-password')) {
+      //       this.validation.passwordlog = 'Invalid Email Id or Password';
+      //     }
+      //   });
     }
   }
 
@@ -142,25 +150,48 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
       .catch(() => this.validation.username = 'Please enter a valid Email Id');
   }
 
+  createUserObject(formValues): User {
+    const user: User = {
+      id: null,
+      firstname: formValues.firstname,
+      lastname: formValues.lastname,
+      email: formValues.emailid,
+      location: formValues.location,
+      password: formValues.passwordgroup.password,
+      phone: formValues.phone,
+      role: formValues.type ? { id: 2, role: USER.B2B } : { id: 3, role: USER.B2C },
+      approved: !formValues.type,
+      deleted: false
+    }
+    return user;
+  }
+
   signUp() {
     this.validation = this.genericValidator.validate(this.form.controls.SignUpForm as FormGroup, true);
     if (Object.keys(this.validation).length === 0) {
-      const newuser = {...this.newuser, ...this.form.controls.SignUpForm.value};
-      firebase.auth().createUserWithEmailAndPassword(newuser.emailid, newuser.passwordgroup.password)
-        .then(res => {
-          this.userservice.createNewUser(res, newuser)
-            .then(() => {
-              if (this.form.controls.SignUpForm.value.type) {
-                this.dialogref.close(null);
-             } else {
-              this.userservice.getUserData(res.user.uid).subscribe(resp => {
-                this.afterSteps(resp.firstname, resp, res.user.uid);
-              });
-            }
-          })
-          .catch(err => console.log(err));
-        })
-        .catch(() => this.validation.emailid = 'Please enter a valid Email Id');
+      const newuser = this.createUserObject(this.form.controls.SignUpForm.value);
+      this.userservice.create(newuser).subscribe((user: User) => {
+        if(user != undefined && user != null) {
+          this.afterSteps(user);
+        } else {
+          this.validation.emailid = "Please enter a valid email";
+        }
+      });
+      // firebase.auth().createUserWithEmailAndPassword(newuser.emailid, newuser.passwordgroup.password)
+      //   .then(res => {
+      //     this.userservice.createNewUser(res, newuser)
+      //       .then(() => {
+      //         if (this.form.controls.SignUpForm.value.type) {
+      //           this.dialogref.close(null);
+      //        } else {
+      //         this.userservice.getUserData(res.user.uid).subscribe(resp => {
+      //           this.afterSteps(resp.firstname, resp, res.user.uid);
+      //         });
+      //       }
+      //     })
+      //     .catch(err => console.log(err));
+      //   })
+      //   .catch(() => this.validation.emailid = 'Please enter a valid Email Id');
     }
   }
 
@@ -196,11 +227,11 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
     return null;
   }
 
-  afterSteps(firstname: string, user: User, id: string) {
-    this.dialogref.close(firstname);
+  afterSteps(user: User) {
+    this.dialogref.close(user.firstname);
     this.store.dispatch(new SetLoggedInUser(user));
-    this.userservice.setCache(id, user);
-    if (user.type === USER.admin) {
+    this.userservice.setCache(user.id.toString(), user);
+    if (user.role.role === USER.admin) {
       this.router.navigate(['/home']);
     }
   }

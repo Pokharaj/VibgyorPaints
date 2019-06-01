@@ -29,7 +29,7 @@ export class AuthGuard implements CanActivate {
     | Promise<boolean | UrlTree> {
 
       return this.store.pipe(select(getLoggedInUser)).pipe(map((user) => {
-      if (user && user.type !== USER.admin) {
+      if (user && user.role.role !== USER.admin) {
         return true;
       } else {
         this.router.navigate(['/home']);

@@ -36,6 +36,7 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { VisitsComponent } from './components/visits/visits.component';
 import { VisitFormComponent } from './components/visits/visit-form.component';
 import { ConfirmationDialogComponent } from './components/confirmation-dialog/confirmation-dialog.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -47,6 +48,7 @@ import { ConfirmationDialogComponent } from './components/confirmation-dialog/co
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
+    HttpClientModule,
     MatCheckboxModule,
     MatButtonModule,
     MatButtonToggleModule,
@@ -84,6 +86,7 @@ import { ConfirmationDialogComponent } from './components/confirmation-dialog/co
   exports: [
     FormsModule,
     ReactiveFormsModule,
+    HttpClientModule,
     MatCheckboxModule,
     MatButtonModule,
     MatButtonToggleModule,

@@ -38,7 +38,7 @@ export class VisitsComponent  implements OnInit, OnDestroy {
       const sub = this.store.pipe(select('user')).subscribe((data: UserState) => {
         if (data) {
           this.user = data.loggedInUser;
-          this.isAdmin = this.user.type === USER.admin;
+          this.isAdmin = this.user.role.role === USER.admin;
         }
       });
       this.subscriptions.push(sub);
@@ -65,7 +65,7 @@ export class VisitsComponent  implements OnInit, OnDestroy {
       // console.log(data.payload.val());
       for (const [key, visitArray] of Object.entries(data.payload.val())) {
         // console.log(visitArray);
-        if (this.isAdmin || this.user.emailid === visitArray['userEmail']) {
+        if (this.isAdmin || this.user.email === visitArray['userEmail']) {
           this.visitsData.push({
             id: key,
             userEmail: visitArray['userEmail'],

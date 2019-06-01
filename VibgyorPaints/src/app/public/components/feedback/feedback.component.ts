@@ -39,7 +39,7 @@ export class FeedbackComponent implements OnInit, OnDestroy {
       if (user) {
         this.isLoggedIn = true;
         this.username = user.firstname + ' ' + user.lastname;
-        if (user.type === USER.admin) {
+        if (user.role.role === USER.admin) {
           this.isNotAdmin = false;
         }
       } else {

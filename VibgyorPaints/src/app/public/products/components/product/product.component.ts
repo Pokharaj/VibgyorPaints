@@ -74,11 +74,11 @@ export class ProductComponent implements OnInit, OnDestroy {
     const sub = this.store.pipe(select(getLoggedInUser)).subscribe((user) => {
       if (user) {
         this.isLoggedIn = true;
-        if (user.type === USER.B2C) {
+        if (user.role.role === USER.B2C) {
           this.quantities = [1, 2, 3, 4, 5];
-        } else if (user.type === USER.B2B) {
+        } else if (user.role.role === USER.B2B) {
           this.quantities = [10, 20, 30, 40, 50];
-        } else if (user.type === USER.admin) {
+        } else if (user.role.role === USER.admin) {
           this.quantities = [1, 2, 3, 4, 5, 10, 20, 30, 40, 50];
         } else {
           this.quantities = [1, 2, 3, 4, 5];
