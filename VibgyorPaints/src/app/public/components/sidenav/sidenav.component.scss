@@ -1,0 +1,74 @@
+.app-sidenav-container {
+  flex: 1;
+  position: fixed;
+  width: 100%;
+  min-width: 100%;
+  height: 100%;
+  min-height: 100%;
+}
+
+.app-sidenav-content {
+  display: flex;
+  position: relative;
+  height: 100%;
+  flex-direction: column;
+}
+
+.app-sidenav {
+  width: 200px;
+}
+
+.sub-menu {
+  padding-left: 25px;
+}
+
+.home {
+  color: white;
+}
+
+.wrapper {
+  margin-top: 64px;
+  margin-bottom: 50px;
+
+  @media (max-width: 600px) {
+    margin-top: 56px;
+  }
+}
+
+.footer {
+  bottom: 0;
+  width: 100%;
+  background-color :#3f51b5;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  margin-top: 50px;
+  z-index: 100;
+
+  @media (max-width: 600px) {
+    font-size: 9pt;
+  }
+}
+
+.mat-expansion-panel-header {
+  padding-right: 24px;
+  padding-left: 0px;
+}
+
+.mat-expansion-panel{
+  box-shadow: none;
+  align-items: center;
+  justify-content: center;
+}
+.link-active {
+  color: #3F51B5;
+}
+/* Spinner */
+.spinner {
+  position:absolute;
+  top: 40%;
+  left: 45%;
+  z-index:300;
+}

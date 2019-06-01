@@ -1,0 +1,53 @@
+<div class="page-content-wrapper">
+  <div class="products-heading">
+    <h2>Locate Store</h2>
+  </div>
+  <hr>
+  <!-- <mat-form-field>
+    <mat-label>City</mat-label>
+    <mat-select (selectionChange)="applyFilter($event.value)">
+      <mat-option value="">All</mat-option>
+      <mat-option *ngFor="let city of cities" [value]="city">
+        {{ city }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field> -->
+
+  <mat-form-field class="example-full-width">
+    <input type="text" placeholder="Search" aria-label="Search" matInput
+      [formControl]="search" [matAutocomplete]="auto">
+    <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+      <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+        {{option}}
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+
+  <div class="mat-elevation-z8">
+    <div class="table-wrapper">
+      <table mat-table [dataSource]="storesDataSource" matSort>
+
+        <ng-container matColumnDef="city">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> City </th>
+          <td mat-cell *matCellDef="let store"> {{store.city}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="storeName">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Store Name </th>
+          <td mat-cell *matCellDef="let store"> {{store.storeName}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="address">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Address </th>
+          <td mat-cell *matCellDef="let store"> {{store.address}} </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </div>
+    <mat-paginator [pageSizeOptions]="[5, 10, 25, 50]" showFirstLastButtons>
+    </mat-paginator>
+  </div>
+
+</div>

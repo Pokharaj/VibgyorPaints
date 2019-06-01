@@ -1,0 +1,101 @@
+<div class="page-content-wrapper">
+  <div class="row">
+    <h2>Products & Themes</h2>
+  </div>
+  <hr>
+  <div *ngIf="productsPage">
+    <button mat-raised-button [disabled]="isLoading" (click)="openProductsForm(null)" color="primary">Add New Product</button>
+  </div>
+  <div *ngIf="!productsPage">
+    <button mat-raised-button [disabled]="isLoading" (click)="openThemesForm(null)" color="primary">Add New Theme</button>
+  </div>
+  <br>
+  <div  class="tab-group-wrapper mat-elevation-z8">
+    <mat-tab-group #tabGroup (selectedTabChange)="tabChangeEvent($event)">
+      <mat-tab label="Products">
+        <div>
+          <div class="table-wrapper">
+            <table mat-table [dataSource]="productsDataSource">
+
+              <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef> Name </th>
+                <td mat-cell *matCellDef="let product"> {{product.name}} </td>
+              </ng-container>
+
+              <ng-container matColumnDef="price">
+                <th mat-header-cell *matHeaderCellDef> Price </th>
+                <td mat-cell *matCellDef="let product"> {{product.price}} </td>
+              </ng-container>
+
+              <ng-container matColumnDef="deleted">
+                <th mat-header-cell *matHeaderCellDef class="text-center">Deleted</th>
+                <td mat-cell *matCellDef="let product" class="text-center">
+                  <mat-checkbox class="example-margin" [checked]="product.isDeleted" disabled></mat-checkbox>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="edit">
+                <th mat-header-cell *matHeaderCellDef class="text-center edit-column">Edit</th>
+                <td mat-cell *matCellDef="let product">
+                  <button mat-icon-button color="primary" title="Edit Details" (click)="openProductsForm(product)">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedProductColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedProductColumns;"></tr>
+            </table>
+
+            <mat-card *ngIf="isLoading" class="spinner">
+              <img src=".\assets\Images\loader.gif" alt="loading">
+            </mat-card>
+          </div>
+        </div>
+      </mat-tab>
+      <mat-tab label="Themes">
+        <table mat-table [dataSource]="themeDataSource">
+
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef> Name </th>
+            <td mat-cell *matCellDef="let theme"> {{theme.name}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="price">
+            <th mat-header-cell *matHeaderCellDef> Price </th>
+            <td mat-cell *matCellDef="let theme"> {{theme.price}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="material">
+            <th mat-header-cell *matHeaderCellDef> Material </th>
+            <td mat-cell *matCellDef="let theme"> {{getMaterialsString(theme.material)}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="deleted">
+              <th mat-header-cell *matHeaderCellDef class="text-center">Deleted</th>
+              <td mat-cell *matCellDef="let theme" class="text-center">
+                <mat-checkbox class="example-margin" [checked]="theme.isDeleted" disabled></mat-checkbox>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="edit">
+              <th mat-header-cell *matHeaderCellDef class="edit-column text-center">Edit</th>
+              <td mat-cell *matCellDef="let theme">
+                <button mat-icon-button color="primary" title="Edit Details" (click)="openThemesForm(theme)">
+                  <mat-icon>edit</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedThemeColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedThemeColumns;"></tr>
+        </table>
+
+        <mat-card *ngIf="isLoading" class="spinner">
+          <img src=".\assets\Images\loader.gif" alt="loading">
+        </mat-card>
+      </mat-tab>
+    </mat-tab-group>
+    <mat-paginator [pageSizeOptions]="[5, 10, 25, 50]" showFirstLastButtons></mat-paginator>
+  </div>
+</div>

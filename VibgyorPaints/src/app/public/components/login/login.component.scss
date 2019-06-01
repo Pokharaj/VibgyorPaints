@@ -1,0 +1,75 @@
+mat-form-field {
+  width: 90%;
+  // display: flex;
+}
+
+mat-slide-toggle{
+  margin: 0px 0px 15px 15px;
+}
+
+mat-hint, mat-error {
+  font-size: smaller;
+}
+
+.email-scss{
+  margin: 12px;
+}
+
+.password-margin{
+  margin: 0px 15px 6px 15px;
+  width: 95%;
+}
+
+.align-icon{
+  display: flex;
+  align-items: flex-end;
+}
+
+input {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+button {
+  width: 45%;
+  padding: 5px 10px;
+  margin: 10px;
+  border: 1px solid;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.username-margin {
+  margin: 15px 15px 0px 15px;
+  width: 95%;
+}
+
+.or-element {
+  text-align: center;
+}
+
+.googleLogIn{
+  text-align: center;
+}
+
+.sing-up-form {
+  min-width: 300px;
+  overflow: auto;
+}
+
+@media (max-width: 600px) {
+  .mat-raised-button {
+    width: 100%;
+    margin: 5px 0;
+  }
+
+}

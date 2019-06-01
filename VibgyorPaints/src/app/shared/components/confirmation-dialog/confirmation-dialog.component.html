@@ -1,0 +1,11 @@
+<h1 mat-dialog-title>Confirm</h1>
+<div mat-dialog-content>
+  <p>{{ message }}</p>
+  <mat-form-field *ngIf="showComments">
+    <textarea matInput [(ngModel)]="comment" placeholder="Comment"></textarea>
+  </mat-form-field>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onYesClick()">Yes</button>
+  <button mat-button (click)="onNoClick()" cdkFocusInitial>No</button>
+</div>

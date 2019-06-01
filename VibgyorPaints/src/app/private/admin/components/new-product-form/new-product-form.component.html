@@ -1,0 +1,39 @@
+<button mat-icon-button (click)="cancel()" style="float: right">
+    <mat-icon>close</mat-icon>
+  </button>
+  <h1 mat-dialog-title>Product Details</h1>
+  <div mat-dialog-content>
+    <form novalidate [formGroup]="productForm" class="productForm">
+
+      <mat-form-field>
+        <input matInput formControlName="name" placeholder="Product Name">
+        <mat-error *ngIf="productForm.get('name').invalid">Product Name is Required</mat-error>
+      </mat-form-field>
+
+      <mat-form-field>
+        <input matInput formControlName="price" placeholder="Product Price">
+        <mat-error *ngIf="productForm.get('price').hasError('required')">Product Price is Required</mat-error>
+        <mat-error *ngIf="productForm.get('price').hasError('pattern')">Product Price can only contain digits</mat-error>
+      </mat-form-field>
+
+      <input #fileInput  (change)="readURL($event);" formControlName="image" type="file"/>
+      <img [hidden]="loading" (load)="this.loading = false" [src]="imageSrc" />
+      <img *ngIf="loading" src=".\assets\Images\loader.gif" style="width: 60%;" alt="loading">
+
+      <div class="active-check-box">
+        <mat-checkbox formControlName="active" matInput>Active</mat-checkbox>
+      </div>
+
+    </form>
+  </div>
+
+  <div mat-dialog-actions>
+      <button mat-button class="submit" color="primary" title="Accept Request"
+        (click)="save()" [disabled]="productForm.valid ? (productForm.dirty ? false:true) : true">
+        <mat-icon>check</mat-icon> Save
+      </button>
+      <button mat-button color="warn" title="Reject Request"
+        (click)="cancel()">
+        <mat-icon>cancel</mat-icon> Cancel
+      </button>
+    </div>

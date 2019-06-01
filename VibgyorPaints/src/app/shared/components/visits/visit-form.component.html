@@ -1,0 +1,55 @@
+<button mat-icon-button (click)="cancel()" style="float: right">
+  <mat-icon>close</mat-icon>
+</button>
+<h1 mat-dialog-title>Visit Details</h1>
+<div mat-dialog-content>
+  <form novalidate
+    [formGroup]="visitForm" class="visitForm">
+
+    <mat-form-field *ngIf="isAdmin">
+      <input matInput formControlName="userEmail" placeholder="User Email">
+    </mat-form-field>
+
+    <mat-form-field>
+      <input matInput formControlName="schDate" [matDatepicker]="schDate"
+        [min]="minSchDate" [max]="maxSchDate" placeholder="Scheduled Date" disabled>
+      <mat-datepicker-toggle matSuffix [for]="schDate" [disabled]="visit"></mat-datepicker-toggle>
+      <mat-datepicker #schDate disabled="false"></mat-datepicker>
+      <mat-error *ngIf="visitForm.get('schDate').invalid">Schedule Date Required</mat-error>
+    </mat-form-field>
+
+    <mat-form-field *ngIf="!(isAdmin || viewOnly || visit === null)">
+      <input matInput formControlName="rchDate" [matDatepicker]="rchDate"
+        [min]="minRchDate" [max]="maxRchDate" placeholder="Re-Scheduled Date" disabled>
+      <mat-datepicker-toggle matSuffix [for]="rchDate"></mat-datepicker-toggle>
+      <mat-datepicker #rchDate disabled="false"></mat-datepicker>
+      <mat-error *ngIf="visitForm.get('rchDate').invalid">Reschedule Date Required</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <textarea matInput formControlName="description" placeholder="Description"></textarea>
+      <mat-error *ngIf="visitForm.get('description').invalid">Description Required</mat-error>
+    </mat-form-field>
+
+    <mat-form-field *ngIf="(isAdmin || viewOnly)">
+      <textarea matInput formControlName="comment" placeholder="Comment"></textarea>
+      <mat-error *ngIf="visitForm.get('comment').invalid">Comment Required</mat-error>
+    </mat-form-field>
+
+  </form>
+</div>
+
+<div mat-dialog-actions>
+  <button mat-button color="primary" title="Reschedule Visit"
+    (click)="save()" [disabled]="!visitForm.valid" *ngIf="!viewOnly">
+    <mat-icon>check</mat-icon> Schedule Visit
+  </button>
+  <button mat-button color="warn" title="Cancel Visit"
+    (click)="cancelVisit()" [disabled]="visitForm.get('description').invalid" *ngIf="!(viewOnly || visit === null)">
+    <mat-icon>cancel</mat-icon> Cancel Visit
+  </button>
+  <button mat-button color="warn" title="Reject Visit"
+    (click)="reject()" *ngIf="isAdmin" [disabled]="!visitForm.valid">
+    <mat-icon>cancel</mat-icon> Reject Visit
+  </button>
+</div>

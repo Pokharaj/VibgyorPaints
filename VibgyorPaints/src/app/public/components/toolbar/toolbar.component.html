@@ -1,0 +1,12 @@
+<mat-toolbar color="primary" class="mat-elevation-z8" class="toolbar">
+  <button mat-button class="sidenav-toggle" (click)="toggleSidenav.emit()">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <span class="site-title">Vibgyor Paints</span>
+  <span class="toolbar-spacer"></span>
+  <button mat-button class="btn-log" (click)="openLoginDialog()" *ngIf="!userloggedIn">{{ greeting }}</button>
+  <span *ngIf="userloggedIn" class="welcome-message">
+    {{ greeting }}
+  </span>
+  <button mat-button class="btn-log" *ngIf="userloggedIn" (click)="logout()">Logout</button>
+</mat-toolbar>

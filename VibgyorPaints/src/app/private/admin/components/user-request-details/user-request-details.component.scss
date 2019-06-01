@@ -1,0 +1,20 @@
+.row {
+  display: flex;
+}
+.row .col-1 {
+  width: 100px;
+  padding: 10px;
+}
+.row .col {
+  padding: 10px;
+  text-align: left;
+}
+.mat-dialog-content {
+  white-space: nowrap;
+}
+td.mat-cell, th.mat-header-cell {
+  padding: 10px;
+}
+.mat-header-row {
+  display: none;
+}

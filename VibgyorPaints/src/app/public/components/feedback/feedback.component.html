@@ -1,0 +1,33 @@
+<div class="page-content-wrapper">
+    <div class="row">
+      <h2>Feedbacks</h2>
+    </div>
+    <hr>
+    <section class="feedbacks">
+      <img *ngIf="loading" src=".\assets\Images\loader.gif" alt="loading" class="spinner">
+      <mat-card class="feedback-card" *ngFor="let feedback of feedbacklist">
+        <mat-card-header>
+          <mat-card-title class="card-title">
+            <div class="feedback-name">{{feedback.name}}</div>
+            <div class="feedback-date">{{getDurationString(feedback.date)}}</div>
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          {{feedback.comment}}
+        </mat-card-content>
+      </mat-card>
+    </section>
+
+    <div *ngIf="isNotAdmin" class="example-full-width">
+      <mat-form-field>
+        <textarea matInput [formControl]="comment" placeholder="Leave a comment"></textarea>
+        <mat-error *ngIf="comment.hasError('required')">Please enter a comment</mat-error>
+      </mat-form-field>
+      <div class="button" *ngIf="isLoggedIn" (click)="addComment()">
+        <button mat-raised-button class="align-right" color="primary">Submit</button>
+      </div>
+      <div class="button" *ngIf="!isLoggedIn" (click)="login()">
+        <button mat-raised-button class="align-right" color="primary">Login</button>
+      </div>
+    </div>
+  </div>

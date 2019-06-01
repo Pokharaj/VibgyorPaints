@@ -1,0 +1,199 @@
+<div class="loginPopup-main-content">
+  <form novalidate [formGroup]="form">
+    <mat-tab-group mat-stretch-tabs>
+      <mat-tab label="Log In">
+
+        <div formGroupName="LogInForm">
+
+          <div class="email-scss">
+            <span class="align-icon">
+              <mat-icon>perm_identity</mat-icon>
+              <label>Email</label>
+            </span>
+            <input type="text" formControlName="username" placeholder="abc@example.com">
+            <mat-error>{{validation.username}}</mat-error>
+          </div>
+
+          <div class="email-scss">
+            <span class="align-icon">
+              <mat-icon>lock</mat-icon>
+              <label>Password</label>
+            </span>
+            <input type="password" formControlName="passwordlog" placeholder="Password">
+            <a class="pointer" (click)="resetPassword()"><mat-hint>Forgot Password?</mat-hint></a>
+            <br><mat-error>{{validation.passwordlog}}</mat-error>
+          </div>
+        </div>
+
+        <!-- <div formGroupName="LogInForm">
+          <mat-form-field>
+            <input matInput type="text" formControlName="username" placeholder="Username">
+            <span matSuffix class="icon-span">
+              <mat-icon>perm_identity</mat-icon>
+            </span>
+            <mat-error>{{validation.username}}</mat-error>
+          </mat-form-field>
+          <mat-form-field>
+            <input matInput type="password" formControlName="passwordlog" placeholder="Password">
+            <span matSuffix class="icon-span">
+              <mat-icon>lock</mat-icon>
+            </span>
+            <mat-error>{{validation.passwordlog}}</mat-error>
+          </mat-form-field>
+        </div> -->
+        <button mat-raised-button color="primary" (click)="logIn()">Log In</button>
+        <button mat-raised-button (click)="dismiss()" style="float: right;">Cancel</button>
+        <div class="or-element">OR</div>
+        <div class="googleLogIn">
+          <button mat-raised-button color="primary" (click)="googleLogin()">Sign in with Google</button>
+        </div>
+
+      </mat-tab>
+      <mat-tab label="Sign Up">
+
+        <div formGroupName="SignUpForm" class="sing-up-form">
+
+          <span class="align-icon">
+            <div class="username-margin">
+              <span class="align-icon">
+                <mat-icon>perm_identity</mat-icon>
+                <label>Name</label>
+              </span>
+              <input placeholder="First Name" formControlName="firstname"/>
+            </div>
+            <div class="password-margin">
+              <input placeholder="Last Name" formControlName="lastname">
+            </div>
+          </span>
+          <span class="align-icon">
+            <mat-error>{{validation.firstname}}</mat-error>
+            <mat-error>{{validation.lastname}}</mat-error>
+          </span>
+
+          <div class="email-scss">
+            <span class="align-icon">
+              <mat-icon>location_on</mat-icon>
+              <label>Location</label>
+            </span>
+            <input placeholder="Location" formControlName="location">
+            <mat-error>{{validation.location}}</mat-error>
+          </div>
+
+          <div class="email-scss">
+            <span class="align-icon">
+              <mat-icon>phone</mat-icon>
+              <label>Phone</label>
+            </span>
+            <input placeholder="Phone" type="tel" formControlName="phone">
+            <mat-error>{{validation.phone}}</mat-error>
+          </div>
+
+          <div class="email-scss">
+            <span class="align-icon">
+              <mat-icon>email</mat-icon>
+              <label>Email ID</label>
+            </span>
+            <input placeholder="Email" formControlName="emailid">
+            <mat-hint>abc@example.com</mat-hint>
+            <br><mat-error>{{validation.emailid}}</mat-error>
+          </div>
+
+          <div formGroupName="passwordgroup" class="align-icon">
+            <div class="password-margin">
+              <span class="align-icon">
+                <mat-icon>lock</mat-icon>
+                <label>Password</label>
+              </span>
+              <input class="form-control" placeholder="Password" formControlName="password" type="password">
+              <mat-error>{{validation.password}}</mat-error>
+            </div>
+            <div class="password-margin">
+              <span class="align-icon">
+                <mat-icon>label</mat-icon>
+                <label>Confirm Password</label>
+              </span>
+              <input class="form-control" placeholder="Confirm Password" formControlName="confirmpassword" type="password">
+              <mat-error>{{validation.confirmpassword}} {{validation.passwordgroup}}</mat-error>
+            </div>
+          </div>
+
+          <mat-slide-toggle color="primary" formControlName="type" class="example-margin">
+            Create Business Account
+          </mat-slide-toggle>
+
+          <button mat-raised-button color="primary" (click)="signUp()">Sign Up</button>
+          <button mat-raised-button (click)="dismiss()" style="float: right;">Cancel</button>
+        </div>
+        <!-- <div formGroupName="SignUpForm">
+          <table><tr>
+            <td>
+              <mat-form-field>
+                <input matInput type="text" formControlName="firstname" placeholder="First Name">
+                <span matSuffix class="icon-span">
+                  <mat-icon>perm_identiry</mat-icon>
+                </span>
+                <mat-error>{{validation.username}}</mat-error>
+              </mat-form-field>
+            </td>
+            <td>
+              <mat-form-field>
+                <input matInput type="text" formControlName="lastname" placeholder="Last Name">
+                <span matSuffix class="icon-span">
+                  <mat-icon>perm_identiry</mat-icon>
+                </span>
+                <mat-error>{{validation.username}}</mat-error>
+              </mat-form-field>
+            </td>
+          </tr></table>
+          <mat-form-field>
+            <input matInput type="text" formControlName="emailid" placeholder="Email">
+            <span matSuffix class="icon-span">
+              <mat-icon>email</mat-icon>
+            </span>
+            <mat-error>{{validation.username}}</mat-error>
+          </mat-form-field>
+          <mat-form-field>
+            <input matInput type="text" pattern="\d*" maxlength="10" minlength="10" class="phone" formControlName="phone" placeholder="Phone">
+            <span matSuffix class="icon-span">
+              <mat-icon>phone</mat-icon>
+            </span>
+            <mat-error>{{validation.username}}</mat-error>
+          </mat-form-field>
+          <mat-form-field>
+            <input matInput type="text" formControlName="location" placeholder="Location">
+            <span matSuffix class="icon-span">
+              <mat-icon>location_on</mat-icon>
+            </span>
+            <mat-error>{{validation.username}}</mat-error>
+          </mat-form-field>
+          <table><tr formGroupName="passwordgroup">
+            <td>
+              <mat-form-field>
+                <input matInput type="password" formControlName="password" placeholder="Password">
+                <span matSuffix class="icon-span">
+                  <mat-icon>lock</mat-icon>
+                </span>
+                <mat-error>{{validation.username}}</mat-error>
+              </mat-form-field>
+            </td>
+            <td>
+              <mat-form-field>
+                <input matInput type="password" formControlName="confirmpassword" placeholder="Confirm Password">
+                <span matSuffix class="icon-span">
+                  <mat-icon>label</mat-icon>
+                </span>
+                <mat-error>{{validation.username}}</mat-error>
+              </mat-form-field>
+            </td>
+          </tr></table>
+          <mat-slide-toggle color="primary" formControlName="type">
+            Create Business Account
+          </mat-slide-toggle>
+
+          <button mat-raised-button color="primary" (click)="signUp()">Sign Up</button>
+          <button mat-raised-button (click)="dismiss()" style="float: right;">Cancel</button>
+        </div> -->
+      </mat-tab>
+    </mat-tab-group>
+  </form>
+</div>

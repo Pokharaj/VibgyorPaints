@@ -1,0 +1,58 @@
+<button mat-icon-button (click)="cancel()" style="float: right">
+  <mat-icon>close</mat-icon>
+</button>
+<h1 mat-dialog-title>Theme Details</h1>
+<div mat-dialog-content>
+  <form novalidate [formGroup]="themeForm" class="themeForm">
+
+    <mat-form-field>
+      <input matInput formControlName="name" placeholder="Theme Name">
+      <mat-error *ngIf="themeForm.get('name').invalid">Theme Name is Required</mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="example-chip-list">
+      <mat-chip-list #chipList>
+        <mat-chip
+          *ngFor="let product of themeForm.get('material').value"
+          [removable]="removable"
+          (removed)="remove(product)">
+          {{product.name}}
+          <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+        </mat-chip>
+        <input
+          placeholder="Materials..."
+          #productInput
+          (click) = "materialCtrl.updateValueAndValidity()"
+          [formControl]="materialCtrl"
+          [matAutocomplete]="auto"
+          [matChipInputFor]="chipList">
+      </mat-chip-list>
+      <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
+        <mat-option *ngFor="let product of productslist | async" [value]="product">
+          {{product.name}}
+        </mat-option>
+      </mat-autocomplete>
+      <mat-error *ngIf="themeForm.get('material').invalid">Atleast 1 Material for Theme is Required</mat-error>
+    </mat-form-field>
+
+    <input #fileInput  (change)="readURL($event);" formControlName="image" type="file"/>
+    <img [hidden]="loading" (load)="this.loading = false" [src]="imageSrc" />
+    <img *ngIf="loading" src=".\assets\Images\loader.gif" style="width: 60%;" alt="loading">
+
+    <div class="active-check-box">
+      <mat-checkbox formControlName="active" matInput>Active</mat-checkbox>
+    </div>
+
+  </form>
+</div>
+
+<div mat-dialog-actions>
+    <button mat-button color="primary" title="Accept Request"
+      (click)="save()" [disabled]="themeForm.valid ? (themeForm.dirty ? false:true) : true">
+      <mat-icon>check</mat-icon> Save
+    </button>
+    <button mat-button color="warn" title="Reject Request"
+      (click)="cancel()">
+      <mat-icon>cancel</mat-icon> Cancel
+    </button>
+  </div>

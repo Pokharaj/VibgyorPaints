@@ -1,0 +1,39 @@
+.feedback-card{
+  margin: 10px;
+  line-height: 1.6;
+}
+
+.card-title{
+  display: flex;
+  justify-content: space-between;
+}
+
+.spinner{
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
+
+.example-full-width{
+  width: 95%;
+  position: fixed;
+  height: 13%;
+  display: flex;
+  bottom: 65px;
+  background-color: ghostwhite;
+  margin-bottom: -15px;
+  border-radius: 10px;
+}
+
+mat-form-field{
+  width: 100%;
+  margin: 0px 10px;
+}
+
+.button{
+  margin: 22px 10px;
+}
+
+.feedbacks{
+  margin-bottom: 10%;
+}

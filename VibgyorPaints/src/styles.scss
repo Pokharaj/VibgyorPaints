@@ -1,0 +1,44 @@
+
+body {
+  margin: 0;
+}
+
+.page-content-wrapper {
+  margin: 25px;
+}
+
+button, input {
+  font-family: Hind, sans-serif;
+}
+
+.text-center {
+  text-align: center !important;
+}
+
+hr {
+  border: 1px solid #3F51B5;
+  margin-bottom: 20px;
+}
+
+table {
+  width: 100%;
+}
+
+td.mat-cell, th.mat-header-cell {
+  padding: 10px;
+}
+
+.table-wrapper {
+  min-width: 270px;
+  overflow: auto;
+}
+
+.spinner{
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+}
+
+.mat-card-header-text{
+  width: 100% !important;
+}

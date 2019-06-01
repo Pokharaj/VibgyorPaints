@@ -1,0 +1,40 @@
+<button mat-icon-button (click)="cancel()" style="float: right">
+  <mat-icon>close</mat-icon>
+</button>
+<h1 mat-dialog-title>Store details</h1>
+<div mat-dialog-content>
+  <form novalidate
+    [formGroup]="storeForm" class="storeForm">
+
+    <mat-form-field>
+      <input matInput formControlName="city" placeholder="City Name">
+      <mat-error *ngIf="storeForm.get('city').invalid">City Name Required</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <input matInput formControlName="storeName" placeholder="Store Name">
+      <mat-error *ngIf="storeForm.get('storeName').invalid">Store Name Required</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <textarea matInput formControlName="address" placeholder="Address"></textarea>
+      <mat-error *ngIf="storeForm.get('address').invalid">Address Required</mat-error>
+    </mat-form-field>
+
+    <div class="active-check-box">
+      <mat-checkbox formControlName="active" matInput> Active</mat-checkbox>
+    </div>
+
+  </form>
+</div>
+
+<div mat-dialog-actions>
+    <button mat-button color="primary" title="Save Details"
+      (click)="save()" [disabled]="!storeForm.valid">
+      <mat-icon>check</mat-icon> Save
+    </button>
+    <button mat-button color="warn" title="Cancel"
+      (click)="cancel()">
+      <mat-icon>cancel</mat-icon> Cancel
+    </button>
+  </div>

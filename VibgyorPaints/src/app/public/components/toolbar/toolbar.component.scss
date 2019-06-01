@@ -1,0 +1,44 @@
+$iconWidth: 56px;
+
+.sidenav-toggle {
+  padding: 0;
+  min-width: $iconWidth;
+
+  mat-icon {
+    font-size: 30px;
+    height: $iconWidth;
+    width: $iconWidth;
+    line-height: $iconWidth;
+    color: white;
+  }
+}
+.toolbar {
+  display: flex;
+  position: fixed;
+  z-index: 100;
+}
+
+.mat-toolbar-row, .mat-toolbar-single-row {
+  padding: 0;
+}
+
+.toolbar-spacer {
+  flex: 1 1 auto;
+}
+
+.btn-log {
+  margin-left: 10px;
+  margin-right: 20px;
+}
+
+@media (max-width: 600px) {
+  .btn-log {
+    margin-right: 10px;
+  }
+  .site-title {
+    font-size: 13pt;
+  }
+  .welcome-message {
+    display: none;
+  }
+}

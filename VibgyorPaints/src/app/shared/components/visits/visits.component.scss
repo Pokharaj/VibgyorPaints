@@ -1,0 +1,37 @@
+.row {
+  display: block;
+  // margin-bottom: 20px;
+}
+.align-right {
+  float: right;
+}
+.mat-form-field {
+  font-size: 14px;
+  width: 100%;
+}
+.mat-form-field {
+  max-width: 300px;
+}
+.mat-form-field-disabled {
+  color: rgba(0, 0, 0, 0.87);
+}
+.hide-on-small {
+  @media (max-width: 720px) {
+    display: none;
+  }
+}
+.hide-on-large {
+  @media (min-width: 720px) {
+    display: none;
+  }
+}
+
+td.mat-cell, th.mat-header-cell {
+  padding: 10px;
+}
+
+td.mat-cell:last-of-type,
+td.mat-footer-cell:last-of-type,
+th.mat-header-cell:last-of-type {
+  padding-right: 0;
+}

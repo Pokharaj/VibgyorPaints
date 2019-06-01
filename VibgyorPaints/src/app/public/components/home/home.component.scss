@@ -1,0 +1,65 @@
+
+.container{
+  display: flex;
+  flex-direction: column
+}
+.header{
+  height: auto;
+  position: relative;
+
+  // Css for Parallax
+  // background: url('src/assets/Images/sw-levelbprofindexplorcolor.jpg');
+  // position:relative;
+  // background-position:center;
+  // background-size:cover;
+  // background-repeat:no-repeat;
+
+  // background-attachment:fixed;
+}
+
+.main-image{
+  width: 100%;
+  height: auto;
+}
+
+.section {
+  padding: 10px 50px;
+  text-align: justify;
+  font-family:"Lato", sans-serif;
+  line-height:1.8em;
+}
+
+.features {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.feature-card{
+  min-width: 25%;
+  max-width: 25%;
+  margin-right: 25px;
+  margin-bottom: 25px;
+  line-height:1.8em;
+
+  .mat-card-image {
+    height: 225px;
+
+    @media (max-width: 400px) {
+      height: 125px;
+    }
+  }
+  .mat-card-subtitle {
+    text-align: justify;
+  }
+
+  @media (max-width: 1020px) {
+    min-width: 40%;
+    max-width: 40%;
+  }
+  @media (max-width: 600px) {
+    min-width: 80%;
+    max-width: 80%;
+  }
+}
+
