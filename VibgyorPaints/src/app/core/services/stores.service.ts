@@ -1,23 +1,33 @@
 import { Injectable } from '@angular/core';
-import { AngularFireDatabase } from '@angular/fire/database';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { environment } from 'src/environments/environment.prod';
+import { Store } from '../models/store';
+
+const httpOptions = {
+  headers: new HttpHeaders({'Content-Type': 'application/json'})
+};
 
 @Injectable({
   providedIn: 'root'
 })
 export class StoresService {
-  constructor(private db: AngularFireDatabase) {}
+  constructor(private http: HttpClient) {}
 
   getStores() {
-    return this.db.object('stores').snapshotChanges();
+    return this.http.get(environment.DATA_URL + 'stores');
   }
 
-  updateStore(uid: string, valueChanges: object) {
-    return this.db.object('stores/' + uid).update(valueChanges);
+  getStore(id: number) {
+    return this.http.get(environment.DATA_URL + 'store/' + id);
   }
-  saveNewStore(cityName: any, valueObj) {
-    return this.db.list(`stores/${cityName}`).push(valueObj);
+
+  create(store: Store) {
+    const body = JSON.stringify(store);
+    return this.http.post(environment.DATA_URL + 'store', body, httpOptions);
   }
-  saveNewCityStore(cityName: any, valueObj) {
-    this.db.object(`stores/${cityName}`).set({ 0: valueObj });
+
+  update(store: Store) {
+    const body = JSON.stringify(store);
+    return this.http.put(environment.DATA_URL + 'store/' + store.id, body, httpOptions);
   }
 }

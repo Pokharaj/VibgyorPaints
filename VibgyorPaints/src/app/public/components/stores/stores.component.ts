@@ -3,7 +3,7 @@ import { MatTableDataSource, MatPaginator, MatSort } from '@angular/material';
 import { Store } from 'src/app/core/models/store';
 import { StoresService } from 'src/app/core/services/stores.service';
 import { FormControl } from '@angular/forms';
-import { Observable, of, Subscriber, Subscription } from 'rxjs';
+import { Observable, of, Subscription } from 'rxjs';
 
 @Component({
   templateUrl: './stores.component.html',
@@ -37,26 +37,31 @@ export class StoresComponent implements OnInit, OnDestroy {
   }
 
   loadData(): void {
-    const sub = this.storesService.getStores().subscribe(data => {
-      this.storesData = [];
-      this.cities = [];
-      for (const [key, storesArray] of Object.entries(data.payload.val())) {
-        this.cities.push(key);
-        for (const [ikey, value] of Object.entries(storesArray)) {
-          this.storesData.push({
-            city: key,
-            storeName: value['name'],
-            address: value['address'],
-            index: ikey,
-            deleted: value['deleted']
-          });
+    this.storesData = [];
+    this.cities = [];
+    const sub = this.storesService.getStores().subscribe((stores: Store[]) => {
+      this.storesData = stores;
+      
+      stores.forEach((store: Store) => {
+        if(!this.cities.includes(store.city.name)) {
+          this.cities.push(store.city.name)
         }
-      }
-      // console.log(this.storesData);
+      });
+
       this.storesDataSource = new MatTableDataSource<Store>(this.storesData);
       this.storesDataSource.paginator = this.paginator;
       this.storesDataSource.sort = this.sort;
 
+      // this.storesDataSource.filterPredicate = (data, filter: string)  => {
+      //   const accumulator = (currentTerm, key) => {
+      //     return key === 'orderInfo' ? currentTerm + data.city.name : currentTerm + data[key];
+      //   };
+      //   const dataStr = Object.keys(data).reduce(accumulator, '').toLowerCase();
+      //   // Transform the filter by converting it to lowercase and removing whitespace.
+      //   const transformedFilter = filter.trim().toLowerCase();
+      //   return dataStr.indexOf(transformedFilter) !== -1;
+      // };
+      
       this.initAutoComplete();
     });
     this.subscriptions.push(sub);

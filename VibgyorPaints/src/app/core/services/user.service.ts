@@ -44,10 +44,6 @@ export class UserService {
     return this.http.put(environment.DATA_URL + 'user/' + user.id, body, httpOptions);
   }
 
-  delete(user) {
-    return this.http.delete(environment.DATA_URL + 'user/' + user.id);
-  }
-
   deleteCache() {
       localStorage.removeItem(this.cookie.get('loggedInUser'));
       this.cookie.delete('loggedInUser');

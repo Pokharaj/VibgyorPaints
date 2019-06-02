@@ -12,7 +12,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 export class StoreFormComponent implements OnInit {
   store: Store;
   storeForm: FormGroup;
-  cities;
+  // cities;
   constructor(
     private fb: FormBuilder,
     private storeService: StoresService,
@@ -20,7 +20,7 @@ export class StoreFormComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data
   ) {
     this.store = data.store;
-    this.cities = data.cities;
+    // this.cities = data.cities;
   }
 
   ngOnInit() {
@@ -33,7 +33,7 @@ export class StoreFormComponent implements OnInit {
       });
     } else {
       this.storeForm = this.fb.group({
-        city: [{value: this.store.city, disabled: true}, Validators.required],
+        city: [{value: this.store.city.name, disabled: true}, Validators.required],
         storeName: [this.store.storeName, Validators.required],
         address: [this.store.address, Validators.required],
         active: [!this.store.deleted]
@@ -42,36 +42,32 @@ export class StoreFormComponent implements OnInit {
   }
 
   save(): void {
-    if (this.store !== null) {
-      this.storeService.updateStore(
-        this.store.city + '/' + this.store.index,
-        this.createUpdateObject(this.storeForm.value)
-      );
+    if (this.store === null) {
+      this.storeService.create(this.createStoreObject(this.storeForm.value)).subscribe(() => {
+        this.dialogRef.close(true);
+      });
     } else {
-      if (!this.cities.includes(this.storeForm.value.city)) {
-        this.storeService.saveNewCityStore(
-          this.storeForm.value.city,
-          this.createUpdateObject(this.storeForm.value)
-        );
-      } else {
-        this.storeService.saveNewStore(
-          this.storeForm.value.city,
-          this.createUpdateObject(this.storeForm.value)
-        );
-      }
+      this.storeService.update(this.createStoreObject(this.storeForm.value)).subscribe(() => {
+        this.dialogRef.close(true);
+      });
     }
-    this.dialogRef.close(true);
   }
 
   cancel(): void {
     this.dialogRef.close(null);
   }
 
-  createUpdateObject(value) {
-    return {
+  createStoreObject(value) {
+    const store: Store = {
+      id: this.store != null ? this.store.id : null,
+      city: {
+        id: this.store != null ? this.store.city.id : null,
+        name: value.city
+      },
       address: value.address,
-      name: value.storeName,
+      storeName: value.storeName,
       deleted: !value.active
     };
+    return store;
   }
 }

@@ -1,13 +1,12 @@
-export interface Store {
-  city: string;
-  storeName: string;
-  address: string;
-  index: string;
-  deleted: boolean;
+export interface City {
+  id: number;
+  name: string;
 }
 
-export interface StoreResolved {
-  stores: Store[];
-  cities: string[];
-  error?: any;
+export interface Store {
+  id: number;
+  city: City;
+  storeName: string;
+  address: string;
+  deleted: boolean;
 }

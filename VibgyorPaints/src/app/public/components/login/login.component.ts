@@ -159,7 +159,7 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
       location: formValues.location,
       password: formValues.passwordgroup.password,
       phone: formValues.phone,
-      role: formValues.type ? { id: 2, role: USER.B2B } : { id: 3, role: USER.B2C },
+      role: formValues.type ? { id: null, role: USER.B2B } : { id: null, role: USER.B2C },
       approved: !formValues.type,
       deleted: false
     }

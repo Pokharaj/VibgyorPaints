@@ -4,7 +4,6 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { Visit } from 'src/app/core/models/visit';
 import { VisitService } from 'src/app/core/services/visit.service';
 import { SnackbarService } from 'src/app/core/services/snackbar.service';
-import { UserService } from 'src/app/core/services/user.service';
 import { User } from 'src/app/core/models/user';
 import { Store, select } from '@ngrx/store';
 import { UserState, getLoggedInUser } from 'src/app/core/state/reducers/user.reducer';
@@ -50,16 +49,18 @@ export class VisitFormComponent implements OnInit, OnDestroy {
   ngOnInit() {
     if (this.isAdmin) {
       this.visitForm = this.fb.group({
-        userEmail: { value: this.visit.userEmail, disabled: true },
-        schDate: { value: new Date(this.visit.visitDate) , disabled: true },
+        userEmail: { value: this.visit.user.email, disabled: true },
+        // schDate: { value: new Date(this.visit.visitDate) , disabled: true },
+        schDate: { value: this.visit.visitDate , disabled: true },
         rchDate: { value: '', disabled: true },
         description: { value: this.visit.description, disabled: true },
         comment: ['', Validators.required],
       });
     } else if (this.viewOnly) {
       this.visitForm = this.fb.group({
-        userEmail: { value: this.visit.userEmail, disabled: true },
-        schDate: { value: new Date(this.visit.visitDate) , disabled: true },
+        userEmail: { value: this.visit.user.email, disabled: true },
+        // schDate: { value: new Date(this.visit.visitDate) , disabled: true },
+        schDate: { value: this.visit.visitDate , disabled: true },
         rchDate: { value: '', disabled: true },
         description: { value: this.visit.description, disabled: true },
         comment: { value: this.visit.comment, disabled: true }
@@ -75,7 +76,8 @@ export class VisitFormComponent implements OnInit, OnDestroy {
     } else {
       this.visitForm = this.fb.group({
         userEmail: '',
-        schDate: { value: new Date(this.visit.visitDate) , disabled: true },
+        // schDate: { value: new Date(this.visit.visitDate) , disabled: true },
+        schDate: { value: this.visit.visitDate , disabled: true },
         rchDate: ['', Validators.required],
         description: [this.visit.description, Validators.required],
         comment: '',
@@ -92,25 +94,24 @@ export class VisitFormComponent implements OnInit, OnDestroy {
 
   save(): void {
     if (this.visit === null) {
-      this.visitService.saveNewVisit(this.createNewObject(this.visitForm.value)).then(
-        () => this.snackbar.openSnackBar('Visit Scheduled', 'Close', 2000),
-        () => console.log('Error')
-      );
+      this.visitService.create(this.createVisitObject(this.visitForm.value)).subscribe(() => {
+        this.snackbar.openSnackBar('Visit Scheduled', 'Close', 2000);
+      });
     } else {
-      this.visitService.updateVisit(this.visit.id, this.createUpdateObject(this.visitForm.value)).then(
-        () => this.snackbar.openSnackBar('Visit Rescheduled', 'Close', 2000),
-        () => console.log('Error')
-      );
+      // TODO: modify changed value
+      this.visitService.update(this.visit).subscribe(() => {
+        this.snackbar.openSnackBar('Visit Rescheduled', 'Close', 2000);
+      });
     }
     this.dialogRef.close(true);
   }
 
   cancelVisit(): void {
-    this.visitService.updateVisit(this.visit.id, {canceled: true}).then(
-      () => this.snackbar.openSnackBar('Visit Canceled', 'Close', 2000),
-      () => console.log('Error')
-    );
-    this.dialogRef.close(true);
+    this.visit.canceled = true;
+    this.visitService.update(this.visit).subscribe(() => {
+      this.snackbar.openSnackBar('Visit Canceled', 'Close', 2000);
+      this.dialogRef.close(true);
+    });
   }
 
   cancel(): void {
@@ -118,44 +119,41 @@ export class VisitFormComponent implements OnInit, OnDestroy {
   }
 
   reject(): void {
-    this.visitService.updateVisit(this.visit.id, {rejected: true, comment: this.visitForm.value.comment}).then(
-      () => this.snackbar.openSnackBar('Request Rejected', 'Close', 2000),
-      () => console.log('Error')
-    );
-    this.dialogRef.close(true);
+    this.visit.rejected = true;
+    this.visit.comment = this.visitForm.value.comment;
+    this.visitService.update(this.visit).subscribe(() => {
+      this.snackbar.openSnackBar('Request Rejected', 'Close', 2000);
+      this.dialogRef.close(true);
+    });
   }
 
-  createNewObject(value) {
+  createVisitObject(value): Visit {
     const date = new Date();
     const schDate = new Date(value.schDate);
-    return {
+    const visit: Visit = {
+      id: null,
       canceled : false,
-      userEmail : this.user.email,
+      user : { ...this.user },
       rejected : false,
-      requestDate : (+date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear(),
-      visitDate : (+schDate.getMonth() + 1) + '/' + schDate.getDate() + '/' + schDate.getFullYear(),
+      requestDate: date,
+      visitDate: schDate,
+      // requestDate : (+date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear(),
+      // visitDate : (+schDate.getMonth() + 1) + '/' + schDate.getDate() + '/' + schDate.getFullYear(),
       description: value.description,
       comment: ''
     };
-  }
-
-  createUpdateObject(value) {
-    const date = new Date();
-    const rchDate = new Date(value.rchDate);
-    return {
-      requestDate : (+date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear(),
-      visitDate : (+rchDate.getMonth() + 1) + '/' + rchDate.getDate() + '/' + rchDate.getFullYear(),
-      description: value.description
-    };
+    return visit;
   }
 
   setMinMaxDates(): void {
     let minDate = new Date();
     minDate.setDate(minDate.getDate() + 1);
     this.minSchDate = minDate;
-
-    minDate = new Date(this.visit.visitDate);
-    minDate.setDate(minDate.getDate() + 1);
-    this.minRchDate = minDate;
+    
+    if(this.visit != null || this.visit != undefined) {
+      minDate = new Date(this.visit.visitDate);
+      minDate.setDate(minDate.getDate() + 1);
+      this.minRchDate = minDate;
+    }
   }
 }

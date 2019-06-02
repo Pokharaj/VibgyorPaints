@@ -5,6 +5,7 @@ import { StoresService } from 'src/app/core/services/stores.service';
 import { StoreFormComponent } from '../store-form/store-form.component';
 import { SnackbarService } from 'src/app/core/services/snackbar.service';
 import { Subscription } from 'rxjs';
+import { storage } from 'firebase';
 
 @Component({
   templateUrl: './stores.component.html',
@@ -40,22 +41,17 @@ export class StoresComponent implements OnInit, OnDestroy {
   }
 
   loadData(): void {
-    const sub = this.storesService.getStores().subscribe((data) => {
-      this.storesData = [];
-      this.cities = [];
-      // console.log(data.payload.val());
-      for (const [key, storesArray] of Object.entries(data.payload.val())) {
-        this.cities.push(key);
-        for (const [ikey, value] of Object.entries(storesArray)) {
-          this.storesData.push({
-            city: key,
-            storeName: value['name'],
-            address: value['address'],
-            index: ikey,
-            deleted: value['deleted']
-          });
+    this.storesData = [];
+    this.cities = [];
+    const sub = this.storesService.getStores().subscribe((stores: Store[]) => {
+      this.storesData = stores;
+      
+      stores.forEach((store: Store) => {
+        if(!this.cities.includes(store.city.name)) {
+          this.cities.push(store.city.name)
         }
-      }
+      });
+
       this.storesDataSource = new MatTableDataSource<Store>(this.storesData);
       this.storesDataSource.paginator = this.paginator;
       this.storesDataSource.sort = this.sort;

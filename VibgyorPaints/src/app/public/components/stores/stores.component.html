@@ -29,7 +29,7 @@
 
         <ng-container matColumnDef="city">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> City </th>
-          <td mat-cell *matCellDef="let store"> {{store.city}} </td>
+          <td mat-cell *matCellDef="let store"> {{store.city.name}} </td>
         </ng-container>
 
         <ng-container matColumnDef="storeName">

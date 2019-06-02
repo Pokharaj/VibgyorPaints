@@ -24,7 +24,7 @@
 
         <ng-container matColumnDef="city">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> City </th>
-          <td mat-cell *matCellDef="let store"> {{store.city}} </td>
+          <td mat-cell *matCellDef="let store"> {{store.city.name}} </td>
         </ng-container>
 
         <ng-container matColumnDef="storeName">
@@ -46,7 +46,7 @@
 
         <ng-container matColumnDef="edit">
           <th mat-header-cell *matHeaderCellDef style="text-align: center">Edit</th>
-          <td mat-cell *matCellDef="let store">
+          <td mat-cell *matCellDef="let store" class="text-center">
             <button mat-icon-button color="primary" title="Edit Details"
               (click)="edit(store)">
               <mat-icon>edit</mat-icon>

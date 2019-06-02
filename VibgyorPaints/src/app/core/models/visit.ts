@@ -1,10 +1,12 @@
+import { User } from './user';
+
 export interface Visit {
-  id: string;
-  userEmail: string;
-  visitDate: string;
-  canceled: boolean;
-  rejected: boolean;
-  requestDate: string;
+  id: number;
+  user: User;
+  visitDate: Date;
+  requestDate: Date;
   description: string;
   comment: string;
+  canceled: boolean;
+  rejected: boolean;
 }
