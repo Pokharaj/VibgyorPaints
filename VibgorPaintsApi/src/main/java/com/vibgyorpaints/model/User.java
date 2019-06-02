@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "User")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class User {
 
 	@Id
@@ -20,19 +20,27 @@ public class User {
 	private Long id;
 	private String firstname;
 	private String lastname;
+
 	@Column(unique = true, nullable = false, length = 100)
 	private String email;
+
 	private String password;
 	private String location;
 	private String phone;
+
 	@OneToOne
 	private Role role;
+
 	private boolean approved;
 	private boolean deleted;
-	
+
+//	@OneToMany(mappedBy = "user")
+//	private List<Visit> visits = new ArrayList<Visit>();
+
 	public String getEmail() {
 		return email;
 	}
+
 	public String getFirstname() {
 		return firstname;
 	}
@@ -60,6 +68,10 @@ public class User {
 	public Role getRole() {
 		return role;
 	}
+
+//	public List<Visit> getVisits() {
+//		return visits;
+//	}
 
 	public boolean isApproved() {
 		return approved;
@@ -108,5 +120,9 @@ public class User {
 	public void setRole(Role role) {
 		this.role = role;
 	}
+
+//	public void setVisits(List<Visit> visits) {
+//		this.visits = visits;
+//	}
 
 }

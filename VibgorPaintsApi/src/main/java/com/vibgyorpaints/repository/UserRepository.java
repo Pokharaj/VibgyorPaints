@@ -8,6 +8,6 @@ import com.vibgyorpaints.model.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
-	@Query("SELECT user FROM com.vibgyorpaints.model.User user WHERE user.email = :email and user.password = :password")
+	@Query("SELECT user FROM User user WHERE user.email = :email and user.password = :password")
 	public User find(@Param("email") String email, @Param("password") String password);
 }

@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.vibgyorpaints.model.Login;
+import com.vibgyorpaints.model.Role;
 import com.vibgyorpaints.model.User;
+import com.vibgyorpaints.repository.RoleRepository;
 import com.vibgyorpaints.repository.UserRepository;
 
 @Service("userService")
@@ -15,6 +17,9 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private UserRepository userRepository;
+	
+	@Autowired
+	private RoleRepository roleRepository;
 
 	@Override
 	public List<User> getUsers() {
@@ -23,6 +28,13 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public User createUser(User user) {
+	Role role = roleRepository.findByName(user.getRole().getRole());
+	if (role != null) {
+		user.setRole(role);
+	} else {
+		role = roleRepository.saveAndFlush(user.getRole());
+		user.setRole(role);
+	}
 		return userRepository.saveAndFlush(user);
 	}
 
@@ -40,13 +52,6 @@ public class UserServiceImpl implements UserService {
 	public User update(Long id, User user) {
 		User existingUser = userRepository.getOne(id);
 		BeanUtils.copyProperties(user, existingUser);
-		return userRepository.saveAndFlush(existingUser);
-	}
-
-	@Override
-	public User delete(Long id) {
-		User existingUser = userRepository.getOne(id);
-		existingUser.setDeleted(true);
 		return userRepository.saveAndFlush(existingUser);
 	}
 }
