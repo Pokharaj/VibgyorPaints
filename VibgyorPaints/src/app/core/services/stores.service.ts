@@ -11,6 +11,7 @@ const httpOptions = {
   providedIn: 'root'
 })
 export class StoresService {
+  
   constructor(private http: HttpClient) {}
 
   getStores() {

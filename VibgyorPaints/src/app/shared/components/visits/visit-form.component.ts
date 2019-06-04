@@ -50,8 +50,8 @@ export class VisitFormComponent implements OnInit, OnDestroy {
     if (this.isAdmin) {
       this.visitForm = this.fb.group({
         userEmail: { value: this.visit.user.email, disabled: true },
-        // schDate: { value: new Date(this.visit.visitDate) , disabled: true },
-        schDate: { value: this.visit.visitDate , disabled: true },
+        schDate: { value: new Date(this.visit.visitDate) , disabled: true },
+        // schDate: { value: this.visit.visitDate , disabled: true },
         rchDate: { value: '', disabled: true },
         description: { value: this.visit.description, disabled: true },
         comment: ['', Validators.required],
@@ -59,8 +59,8 @@ export class VisitFormComponent implements OnInit, OnDestroy {
     } else if (this.viewOnly) {
       this.visitForm = this.fb.group({
         userEmail: { value: this.visit.user.email, disabled: true },
-        // schDate: { value: new Date(this.visit.visitDate) , disabled: true },
-        schDate: { value: this.visit.visitDate , disabled: true },
+        schDate: { value: new Date(this.visit.visitDate) , disabled: true },
+        // schDate: { value: this.visit.visitDate , disabled: true },
         rchDate: { value: '', disabled: true },
         description: { value: this.visit.description, disabled: true },
         comment: { value: this.visit.comment, disabled: true }
@@ -76,8 +76,8 @@ export class VisitFormComponent implements OnInit, OnDestroy {
     } else {
       this.visitForm = this.fb.group({
         userEmail: '',
-        // schDate: { value: new Date(this.visit.visitDate) , disabled: true },
-        schDate: { value: this.visit.visitDate , disabled: true },
+        schDate: { value: new Date(this.visit.visitDate) , disabled: true },
+        // schDate: { value: this.visit.visitDate , disabled: true },
         rchDate: ['', Validators.required],
         description: [this.visit.description, Validators.required],
         comment: '',
@@ -98,7 +98,8 @@ export class VisitFormComponent implements OnInit, OnDestroy {
         this.snackbar.openSnackBar('Visit Scheduled', 'Close', 2000);
       });
     } else {
-      // TODO: modify changed value
+      this.visit.visitDate = new Date(this.visitForm.value.rchDate);
+      this.visit.description = this.visitForm.value.description;
       this.visitService.update(this.visit).subscribe(() => {
         this.snackbar.openSnackBar('Visit Rescheduled', 'Close', 2000);
       });

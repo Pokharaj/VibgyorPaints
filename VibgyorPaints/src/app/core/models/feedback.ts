@@ -1,7 +1,8 @@
+import { User } from './user';
+
 export interface Feedback {
-  name: string;
+  id: number;
+  user: User;
   date: Date;
   comment: string;
-  id: number;
-  key: string;
 }

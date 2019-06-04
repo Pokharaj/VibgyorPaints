@@ -1,20 +1,34 @@
 import { Injectable } from '@angular/core';
-import { AngularFireDatabase } from '@angular/fire/database';
 import { Feedback } from '../models/feedback';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { environment } from 'src/environments/environment.prod';
+
+const httpOptions = {
+  headers: new HttpHeaders({'Content-Type': 'application/json'})
+};
 
 @Injectable({
   providedIn: 'root'
 })
 export class FeedbackService {
 
-  constructor(private db: AngularFireDatabase) { }
+  constructor(private http: HttpClient) {}
 
-  getFeedback() {
-   return this.db.object('feedbacks').snapshotChanges();
+  getFeedbacks() {
+    return this.http.get(environment.DATA_URL + 'feedbacks');
   }
 
-  saveFeedback(feedback) {
-    return this.db.object('feedbacks/' + feedback.id).set(feedback);
+  getFeedback(id: number) {
+    return this.http.get(environment.DATA_URL + 'feedback/' + id);
   }
 
+  create(feedback: Feedback) {
+    const body = JSON.stringify(feedback);
+    return this.http.post(environment.DATA_URL + 'feedback', body, httpOptions);
+  }
+
+  update(feedback: Feedback) {
+    const body = JSON.stringify(feedback);
+    return this.http.put(environment.DATA_URL + 'feedback/' + feedback.id, body, httpOptions);
+  }
 }

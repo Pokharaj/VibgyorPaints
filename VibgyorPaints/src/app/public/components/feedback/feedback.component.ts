@@ -10,6 +10,7 @@ import { select, Store } from '@ngrx/store';
 import { USER } from 'src/app/shared/constants';
 import { FeedbackService } from 'src/app/core/services/feedback.service';
 import { SnackbarService } from 'src/app/core/services/snackbar.service';
+import { User } from 'src/app/core/models/user';
 
 @Component({
   selector: 'app-feedback',
@@ -18,15 +19,15 @@ import { SnackbarService } from 'src/app/core/services/snackbar.service';
 })
 export class FeedbackComponent implements OnInit, OnDestroy {
 
-  feedbacklist: Feedback[];
+  feedbacks: Feedback[];
   sub: Subscription;
   loading = true;
   isLoggedIn = false;
   comment: FormControl;
-  isNotAdmin = true;
-  username = '';
+  user: User;
+  isAdmin = true;
 
-  constructor(private feedbackservice: FeedbackService,
+  constructor(private feedbackService: FeedbackService,
               private datepipe: DatePipe,
               private dialog: MatDialog,
               private store: Store<UserState>,
@@ -38,26 +39,23 @@ export class FeedbackComponent implements OnInit, OnDestroy {
     this.sub = this.store.pipe(select(getLoggedInUser)).subscribe((user) => {
       if (user) {
         this.isLoggedIn = true;
-        this.username = user.firstname + ' ' + user.lastname;
+        this.user = user;
         if (user.role.role === USER.admin) {
-          this.isNotAdmin = false;
+          this.isAdmin = true;
+        } else {
+          this.isAdmin = false;
         }
       } else {
         this.isLoggedIn = false;
       }
     });
+    this.loadData();
+  }
 
-    this.sub = this.feedbackservice.getFeedback().subscribe(res => {
-      this.feedbacklist = [];
-      for (const [key, value] of Object.entries(res.payload.val())) {
-        this.feedbacklist.push({
-          key,
-          id: value.id,
-          name: value.name,
-          date: new Date(value.date),
-          comment: value.comment
-        });
-      }
+  loadData() {
+    this.feedbacks = [];
+    this.sub = this.feedbackService.getFeedbacks().subscribe((feedbacks: Feedback[]) => {
+      this.feedbacks = feedbacks;
       this.loading = false;
     });
   }
@@ -77,19 +75,18 @@ export class FeedbackComponent implements OnInit, OnDestroy {
     });
   }
 
-  addComment() {
+  postFeedback() {
     if (!this.comment.invalid) {
-      const feedback = {
-        id: this.feedbacklist.length,
-        name: this.username,
-        date: new Date().toDateString(),
+      const feedback: Feedback = {
+        id: null,
+        user: this.user,
+        date: new Date(),
         comment: this.comment.value
       };
-      this.feedbackservice.saveFeedback(feedback).then(() => {
+      this.feedbackService.create(feedback).subscribe(() => {
         this.snackbar.openSnackBar('Feedback Saved', 'Close', 2000);
         this.comment = new FormControl();
-      }).catch(err => {
-        console.log(err);
+        this.loadData();
       });
     }
   }

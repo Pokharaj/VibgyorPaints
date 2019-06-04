@@ -3,27 +3,30 @@
       <h2>Feedbacks</h2>
     </div>
     <hr>
+    <mat-card *ngIf="feedbacks.length == 0">No Feedbacks to display</mat-card>
     <section class="feedbacks">
       <img *ngIf="loading" src=".\assets\Images\loader.gif" alt="loading" class="spinner">
-      <mat-card class="feedback-card" *ngFor="let feedback of feedbacklist">
+      <mat-card class="feedback-card" *ngFor="let feedback of feedbacks">
         <mat-card-header>
           <mat-card-title class="card-title">
-            <div class="feedback-name">{{feedback.name}}</div>
-            <div class="feedback-date">{{getDurationString(feedback.date)}}</div>
+            <div class="feedback-name">
+              {{ feedback.user.firstname + ' ' + feedback.user.lastname }}
+            </div>
+            <div class="feedback-date">{{ getDurationString(feedback.date) }}</div>
           </mat-card-title>
         </mat-card-header>
         <mat-card-content>
-          {{feedback.comment}}
+          {{ feedback.comment }}
         </mat-card-content>
       </mat-card>
     </section>
 
-    <div *ngIf="isNotAdmin" class="example-full-width">
+    <div *ngIf="!isAdmin" class="example-full-width">
       <mat-form-field>
         <textarea matInput [formControl]="comment" placeholder="Leave a comment"></textarea>
         <mat-error *ngIf="comment.hasError('required')">Please enter a comment</mat-error>
       </mat-form-field>
-      <div class="button" *ngIf="isLoggedIn" (click)="addComment()">
+      <div class="button" *ngIf="isLoggedIn" (click)="postFeedback()">
         <button mat-raised-button class="align-right" color="primary">Submit</button>
       </div>
       <div class="button" *ngIf="!isLoggedIn" (click)="login()">
