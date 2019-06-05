@@ -1,8 +1,8 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA, MatTableDataSource } from '@angular/material';
 import { EstimatesService } from '../../services/estimates.service';
-import { Products } from 'src/app/core/models/products';
-import { Themes } from 'src/app/core/models/themes';
+import { Product } from 'src/app/core/models/product';
+import { Theme } from 'src/app/core/models/theme';
 
 @Component({
   selector: 'app-estimates-dialog',
@@ -11,11 +11,11 @@ import { Themes } from 'src/app/core/models/themes';
 })
 export class EstimatesDialogComponent implements OnInit {
 
-  products: Products[];
-  theme: Themes;
+  products: Product[];
+  theme: Theme;
   isProduct: boolean;
   displayedColumns: string[];;
-  dataSource: MatTableDataSource<Products>;
+  dataSource: MatTableDataSource<Product>;
   constructor(private estimates: EstimatesService,
               public dialogRef: MatDialogRef<EstimatesDialogComponent>,
               @Inject(MAT_DIALOG_DATA) public data
@@ -31,11 +31,11 @@ export class EstimatesDialogComponent implements OnInit {
     if (this.isProduct) {
       this.displayedColumns = ['name', 'qty', 'price', 'total'];
       this.products = this.estimates.products;
-      this.dataSource = new MatTableDataSource<Products>(this.products);
+      this.dataSource = new MatTableDataSource<Product>(this.products);
     } else {
       this.displayedColumns = ['name', 'price'];
       this.theme = this.estimates.theme;
-      this.dataSource = new MatTableDataSource<Products>(this.theme.material);
+      this.dataSource = new MatTableDataSource<Product>(this.theme.materials);
     }
   }
 
@@ -46,7 +46,7 @@ export class EstimatesDialogComponent implements OnInit {
         total += (element.price * element.quantity);
       });
     } else {
-      this.theme.material.forEach((element) => {
+      this.theme.materials.forEach((element) => {
         total += (element.price * element.quantity);
       });
     }

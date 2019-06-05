@@ -2,7 +2,6 @@ import { Component, OnInit, OnDestroy, AfterViewInit, ViewChildren, ElementRef }
 import { FormBuilder, FormGroup, FormControlName, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material';
 import { User } from 'src/app/core/models/user';
-import * as firebase from 'firebase';
 import { UserService } from 'src/app/core/services/user.service';
 import { Subscription, Observable, fromEvent, merge } from 'rxjs';
 import { GenericValidator } from 'src/app/core/validators/generic-validator';
@@ -29,7 +28,7 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
 
   constructor(private builder: FormBuilder,
               private dialogref: MatDialogRef<LoginComponent>,
-              private userservice: UserService,
+              private userService: UserService,
               private store: Store<UserState>,
               private router: Router) {
 
@@ -113,26 +112,14 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
   logIn() {
     this.validation = this.genericValidator.validate(this.form.controls.LogInForm as FormGroup, true);
     if (Object.keys(this.validation).length === 0) {
-      this.userservice.login(this.form.controls.LogInForm.value.username,
+      this.userService.login(this.form.controls.LogInForm.value.username,
         this.form.controls.LogInForm.value.passwordlog).subscribe((user: User) => {
-          if(user != null || user != undefined) {
-            this.afterSteps(user);
+          if(user) {
+            this.postLoginSteps(user);
           } else {
             this.validation.passwordlog = 'Invalid Username or password';
           }
         });
-      // firebase.auth().signInWithEmailAndPassword(this.form.controls.LogInForm.value.username,
-      //   this.form.controls.LogInForm.value.passwordlog)
-      //   .then(res => {
-      //     this.userservice.getUserData(res.user.uid).subscribe(resp => {
-      //       if (resp.active) {
-      //         this.afterSteps(resp.firstname, resp, res.user.uid);
-      //       } else {
-      //         this.validation.passwordlog = 'Account activation pending';
-      //       }
-      //     });
-      //   })
-      //   .catch((err) => {
       //     if (err.code.includes('invalid-email')) {
       //       this.validation.username = 'Please enter a valid Email Id';
       //     } else if (err.code.includes('user-not-found')) {
@@ -140,14 +127,13 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
       //     } else if (err.code.includes('wrong-password')) {
       //       this.validation.passwordlog = 'Invalid Email Id or Password';
       //     }
-      //   });
     }
   }
 
   resetPassword() {
-    firebase.auth().sendPasswordResetEmail(this.form.controls.LogInForm.value.username)
-      .then(() => this.dialogref.close(null))
-      .catch(() => this.validation.username = 'Please enter a valid Email Id');
+    // firebase.auth().sendPasswordResetEmail(this.form.controls.LogInForm.value.username)
+    //   .then(() => this.dialogref.close(null))
+    //   .catch(() => this.validation.username = 'Please enter a valid Email Id');
   }
 
   createUserObject(formValues): User {
@@ -170,28 +156,13 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
     this.validation = this.genericValidator.validate(this.form.controls.SignUpForm as FormGroup, true);
     if (Object.keys(this.validation).length === 0) {
       const newuser = this.createUserObject(this.form.controls.SignUpForm.value);
-      this.userservice.create(newuser).subscribe((user: User) => {
+      this.userService.create(newuser).subscribe((user: User) => {
         if(user != undefined && user != null) {
-          this.afterSteps(user);
+          this.postLoginSteps(user);
         } else {
           this.validation.emailid = "Please enter a valid email";
         }
       });
-      // firebase.auth().createUserWithEmailAndPassword(newuser.emailid, newuser.passwordgroup.password)
-      //   .then(res => {
-      //     this.userservice.createNewUser(res, newuser)
-      //       .then(() => {
-      //         if (this.form.controls.SignUpForm.value.type) {
-      //           this.dialogref.close(null);
-      //        } else {
-      //         this.userservice.getUserData(res.user.uid).subscribe(resp => {
-      //           this.afterSteps(resp.firstname, resp, res.user.uid);
-      //         });
-      //       }
-      //     })
-      //     .catch(err => console.log(err));
-      //   })
-      //   .catch(() => this.validation.emailid = 'Please enter a valid Email Id');
     }
   }
 
@@ -227,11 +198,11 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
     return null;
   }
 
-  afterSteps(user: User) {
+  postLoginSteps(user: User) {
     this.dialogref.close(user.firstname);
     this.store.dispatch(new SetLoggedInUser(user));
-    this.userservice.setCache(user.id.toString(), user);
-    if (user.role.role === USER.admin) {
+    this.userService.setCache(user.id.toString(), user);
+    if (user.role.role === USER.ADMIN) {
       this.router.navigate(['/home']);
     }
   }

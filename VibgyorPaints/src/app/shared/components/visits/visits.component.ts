@@ -38,7 +38,7 @@ export class VisitsComponent  implements OnInit, OnDestroy {
       const sub = this.store.pipe(select(getLoggedInUser)).subscribe((user: User) => {
         if (user) {
           this.user = user;
-          this.isAdmin = this.user.role.role === USER.admin;
+          this.isAdmin = this.user.role.role === USER.ADMIN;
         } else {
           this.isAdmin = false;
         }

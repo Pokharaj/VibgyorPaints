@@ -1,11 +1,11 @@
 import { Component, OnInit, Inject, ViewChild, ElementRef } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA, MatAutocompleteSelectedEvent, MatAutocomplete, MatChipInputEvent } from '@angular/material';
-import { ProductsThemesService } from 'src/app/core/services/products-themes.service';
-import { Products } from 'src/app/core/models/products';
+import { MatDialogRef, MAT_DIALOG_DATA, MatAutocompleteSelectedEvent, MatAutocomplete } from '@angular/material';
+import { Product } from 'src/app/core/models/product';
 import { Observable } from 'rxjs';
-import { ENTER, COMMA} from '@angular/cdk/keycodes';
-import { startWith, map } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
+import { Theme } from 'src/app/core/models/theme';
+import { ThemeService } from 'src/app/core/services/theme.service';
 
 @Component({
   selector: 'app-new-theme-form',
@@ -15,11 +15,11 @@ import { startWith, map } from 'rxjs/operators';
 export class NewThemeFormComponent implements OnInit {
 
   themeForm: FormGroup;
-  newid: number;
   imageSrc;
   loading = false;
-  productslist: Observable<Products[]>;
-  products: Products[];
+  theme: Theme;
+  productslist: Observable<Product[]>;
+  products: Product[];
   materialCtrl = new FormControl();
   removable = true;
 
@@ -28,50 +28,62 @@ export class NewThemeFormComponent implements OnInit {
   @ViewChild('fileInput') fileInput;
 
   constructor(private fb: FormBuilder,
-              @Inject(MAT_DIALOG_DATA) private theme,
-              public dialogRef: MatDialogRef<NewThemeFormComponent>,
-              private productservice: ProductsThemesService) {
-                this.newid = theme.newid;
-                this.products = theme.products.filter(product => product.isDeleted === false);
-                if (theme.data) {
-                  this.loading = true;
-                  this.theme = theme.data;
-                  this.products = this.products.filter(product => !this.theme.material.includes(product));
-                  this.productservice.getImage(theme.data.imageURL).then(url => this.imageSrc = url);
-                } else {
-                  this.imageSrc = './assets/Images/PlaceholderImage150.png';
-                  this.theme.material = [];
-                }
-                this.productslist = this.materialCtrl.valueChanges.pipe(
-                  map((product: any | null) => product ? this._filter(product) : this.products.slice()));
-              }
+              @Inject(MAT_DIALOG_DATA) data,
+              private dialogRef: MatDialogRef<NewThemeFormComponent>,
+              private themeService: ThemeService) {
+    this.products = data.products.filter(product => product.deleted === false);
+    if (data.theme) {
+      this.loading = true;
+      this.theme = data.theme;
+      this.products = this.theme.materials;
+      // this.productThemeService.getImage(this.theme.imageUrl).then(url => this.imageSrc = url);
+    } else {
+      this.imageSrc = './assets/Images/PlaceholderImage150.png';
+      this.theme = {
+        id: null,
+        themeName: '',
+        imageUrl: '',
+        deleted: false,
+        materials: []
+      }
+    }
+    this.productslist = this.materialCtrl.valueChanges.pipe(
+      map((product: Product | null) => product ? this.filter(product) : this.products.slice()));
+  }
 
   ngOnInit() {
+    if(this.theme) {
       this.themeForm = this.fb.group({
-        name: [this.theme.name, Validators.required],
-        material: [this.theme.material.map(ele => ele), Validators.required],
-        image: ['', this.theme.id === undefined ? Validators.required : null ],
-        active: [this.theme.isDeleted === undefined ? true : !this.theme.isDeleted]
+        name: [this.theme.themeName, Validators.required],
+        material: [this.theme.materials.map(ele => ele), Validators.required],
+        image: [''],
+        active: !this.theme.deleted
       });
+    } else {
+      this.themeForm = this.fb.group({
+        name: ['', Validators.required],
+        material: [null, Validators.required],
+        image: ['', Validators.required],
+        active: true
+      });
+    }
   }
 
   save() {
-    const theme = {
-      id: this.theme.id === undefined ? this.newid : this.theme.id,
-      imageURL: this.themeForm.controls.image.dirty
+    const theme: Theme = {
+      id: this.theme ? this.theme.id : null,
+      imageUrl: this.themeForm.controls.image.dirty
                 ? 'images/themes/' + this.themeForm.controls.name.value.replace(/\s/g, '') + '.jpg'
-                : this.theme.imageURL,
-      isDeleted: this.theme.id === undefined ? false : !this.themeForm.controls.active.value,
-      name: this.themeForm.controls.name.value,
-      material: this.themeForm.controls.material.value.map(product => product.id)
+                : this.theme.imageUrl,
+      deleted: this.theme ? !this.themeForm.controls.active.value : false,
+      themeName: this.themeForm.controls.name.value,
+      materials: this.themeForm.controls.material.value.map(product => product)
     };
 
-    this.productservice.addThemeChanges(theme, theme.id, this.themeForm.controls.image.dirty
-                                                        ? this.fileInput.nativeElement.files[0]
-                                                        : '').then(() => {
+    // this.productThemeService.saveImage(theme.imageUrl, this.themeForm.controls.image.dirty
+    //   ? this.fileInput.nativeElement.files[0] : '');
+    this.themeService.create(theme).subscribe(() => {
       this.dialogRef.close(true);
-    }).catch(err => {
-      console.log(err);
     });
   }
 
@@ -88,7 +100,7 @@ export class NewThemeFormComponent implements OnInit {
     }
   }
 
-  remove(product: Products) {
+  remove(product: Product) {
     const index = this.themeForm.controls.material.value.indexOf(product);
     if (index >= 0) {
       this.products.push(this.themeForm.controls.material.value[index]);
@@ -99,13 +111,13 @@ export class NewThemeFormComponent implements OnInit {
     }
   }
 
-  private _filter(value: any): Products[] {
+  private filter(value: any): Product[] {
     if (typeof(value) === 'string') {
       const filterValue = value.toLowerCase();
-      return this.products.filter(product => product.name.toLowerCase().indexOf(filterValue) === 0);
+      return this.products.filter(product => product.productName.toLowerCase().indexOf(filterValue) === 0);
     } else {
-      const filterValue = value.name.toLowerCase();
-      return this.products.filter(product => product.name.toLowerCase().indexOf(filterValue) === 0);
+      const filterValue = value.productName.toLowerCase();
+      return this.products.filter(product => product.productName.toLowerCase().indexOf(filterValue) === 0);
     }
   }
 

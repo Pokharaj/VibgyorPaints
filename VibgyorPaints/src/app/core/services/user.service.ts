@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { AngularFireDatabase, AngularFireObject } from '@angular/fire/database';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CookieService } from 'ngx-cookie-service';
 import { User } from '../models/user';
@@ -14,10 +13,7 @@ const httpOptions = {
 })
 export class UserService {
 
-  dbref: AngularFireObject<User>;
-
-  constructor(private db: AngularFireDatabase,
-              private cookie: CookieService,
+  constructor(private cookie: CookieService,
               private http: HttpClient) {
    }
    
@@ -52,9 +48,5 @@ export class UserService {
   setCache(id: string, user: User) {
     this.cookie.set('loggedInUser', id);
     localStorage.setItem(id, JSON.stringify(user));
-  }
-
-  getData(key: string) {
-    return this.db.object(key).snapshotChanges();
   }
 }

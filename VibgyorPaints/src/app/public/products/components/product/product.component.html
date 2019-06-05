@@ -7,28 +7,30 @@
     <button mat-raised-button (click)="showEstimates()"
       class="align-right" color="primary">Show Estimates</button>
   </div>
+  {{ productslist }}
   <div class="row" *ngIf="!isLoggedIn">
     <button mat-raised-button (click)="login()"
       class="align-right" color="primary">Login to See Estimates</button>
   </div>
   <section class="products">
-    <mat-card class="product-card" *ngFor="let product of productslist">
+    <mat-card class="product-card" *ngFor="let product of products">
       <mat-card-header>
-        <mat-checkbox class="select-product" (change)="checkChange(product)" [checked]="product.checked"></mat-checkbox>
+        <mat-checkbox class="select-product" (change)="checkChange(product)" [checked]="false">
+        </mat-checkbox>
         <mat-card-title>
           <img *ngIf="loading" src=".\assets\Images\loader.gif" style="width: 60%;" alt="loading">
-          <img [hidden]="loading" (load)="this.loading = false" src="{{ product.imageURL }}"
+          <img [hidden]="loading" (load)="this.loading = false" src="{{ product.imageUrl }}"
             (error)="imageLoadError(product)"/>
         </mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        <b>Name: </b>{{product.name}}
+        <b>Name: </b>{{product.productName}}
         <br><b>Price: </b>{{product.price}}
         <br><b>Quantity: </b>
         <mat-form-field style="width: 35px;">
           <mat-select [(ngModel)]="product.quantity">
             <mat-option *ngFor="let quantity of quantities" [value]="quantity">
-              {{quantity}}
+              {{ quantity }}
             </mat-option>
           </mat-select>
         </mat-form-field>

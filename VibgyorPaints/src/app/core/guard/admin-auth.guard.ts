@@ -18,7 +18,7 @@ export class AdminAuthGuard implements CanLoad {
     segments: UrlSegment[]
   ): boolean | Observable<boolean> | Promise<boolean> {
     return this.store.pipe(select(getLoggedInUser)).pipe(map((user) => {
-      if (user && user.role.role === USER.admin) {
+      if (user && user.role.role === USER.ADMIN) {
         return true;
       } else {
         this.router.navigate(['/home']);

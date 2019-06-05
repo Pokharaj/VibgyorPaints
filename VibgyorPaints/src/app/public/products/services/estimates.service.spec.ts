@@ -1,29 +1,27 @@
 import { TestBed } from '@angular/core/testing';
 
 import { EstimatesService } from './estimates.service';
-import { Products } from 'src/app/core/models/products';
-import { Themes } from 'src/app/core/models/themes';
+import { Product } from 'src/app/core/models/product';
+import { Theme } from 'src/app/core/models/theme';
 
 describe('EstimatesService', () => {
   let estimateService: EstimatesService;
-  const product: Products = {
-    key: '0',
-    name: 'Product1',
+  const product: Product = {
     id: 1,
-    imageURL: 'url',
+    productId: 100,
+    productName: 'Product1',
+    imageUrl: 'url',
     price: 100,
     quantity: 1,
-    checked: false,
-    isDeleted: false
+    deleted: false
   };
-  const theme: Themes = {
-    key: '0',
+  const theme: Theme = {
     id: 1,
-    name: 'theme1',
-    imageURL: 'url',
-    material: [product],
-    price: product.price,
-    isDeleted: false
+    themeId: 101,
+    themeName: 'theme1',
+    imageUrl: 'url',
+    materials: [product],
+    deleted: false
   };
 
   it('should not have any products at the begining', () => {

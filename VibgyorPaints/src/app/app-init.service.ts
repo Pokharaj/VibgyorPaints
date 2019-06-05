@@ -12,7 +12,9 @@ export class AppInitService {
   Init() {
     return new Promise<void>((resolve, reject) => {
       if (Object.keys(this.cookie.get('loggedInUser')).length > 0) {
-        this.store.dispatch(new SetLoggedInUser(JSON.parse(localStorage.getItem(this.cookie.get('loggedInUser')))));
+        this.store.dispatch(new SetLoggedInUser(
+          JSON.parse(localStorage.getItem(this.cookie.get('loggedInUser')))
+        ));
       }
       resolve();
     });

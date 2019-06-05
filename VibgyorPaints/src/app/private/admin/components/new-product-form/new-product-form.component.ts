@@ -1,7 +1,8 @@
 import { Component, OnInit, Inject, ViewChild } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
-import { ProductsThemesService } from 'src/app/core/services/products-themes.service';
+import { Product } from 'src/app/core/models/product';
+import { ProductService } from 'src/app/core/services/product.service';
 
 @Component({
   selector: 'app-new-product-form',
@@ -12,50 +13,58 @@ export class NewProductFormComponent implements OnInit {
 
   productForm: FormGroup;
   newid: number;
+  product: Product;
   imageSrc;
   loading = false;
   @ViewChild('fileInput') fileInput;
 
   constructor(private fb: FormBuilder,
-              @Inject(MAT_DIALOG_DATA) public product,
+              @Inject(MAT_DIALOG_DATA) data,
               public dialogRef: MatDialogRef<NewProductFormComponent>,
-              private productservice: ProductsThemesService) {
-                this.newid = product.newid;
-                if (product.data) {
+              private productService: ProductService) {
+                if (data.product) {
                   this.loading = true;
-                  this.product = product.data;
-                  this.productservice.getImage(product.data.imageURL).then(url => this.imageSrc = url);
+                  this.product = data.product;
+                  // this.productThemeService.getImage(this.product.imageUrl).then(url => this.imageSrc = url);
                 } else {
                   this.imageSrc = './assets/Images/PlaceholderImage150.png';
                 }
               }
 
   ngOnInit() {
+    if(this.product) {
       this.productForm = this.fb.group({
-        name: [this.product.name, Validators.required],
+        name: [this.product.productName, Validators.required],
         price: [this.product.price, [Validators.required, Validators.pattern('^[0-9]*$')]],
         image: ['', this.product.id === undefined ? Validators.required : null],
-        active: [this.product.isDeleted === undefined ? true : !this.product.isDeleted]
+        active: [this.product.deleted === undefined ? true : !this.product.deleted]
       });
+    } else {
+      this.productForm = this.fb.group({
+        name: ['', Validators.required],
+        price: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
+        image: ['', Validators.required],
+        active: [true]
+      });
+    }
   }
 
   save() {
-    const product = {
-      id: this.product.id === undefined ? this.newid : this.product.id,
-      imageURL: this.productForm.controls.image.dirty
-                ? 'images/products/' + this.productForm.controls.name.value.replace(/\s/g, '') + '.jpg'
-                : this.product.imageURL,
-      isDeleted: this.product.id === undefined ? false : !this.productForm.controls.active.value,
-      name: this.productForm.controls.name.value,
+    const product: Product = {
+      id: this.product ? this.product.id : null,
+      imageUrl: this.product ? this.product.imageUrl : null,
+      deleted: !this.productForm.controls.active.value,
+      productName: this.productForm.controls.name.value,
       price: this.productForm.controls.price.value
     };
-
-    this.productservice.addChanges(product, product.id, this.productForm.controls.image.dirty
-                                                        ? this.fileInput.nativeElement.files[0]
-                                                        : '').then(() => {
-      this.dialogRef.close(true);
-    }).catch(err => {
-      console.log(err);
+    const formData = new FormData();
+    formData.append("file", this.fileInput.nativeElement.files[0]);
+    this.productService.upload(formData).subscribe((res: string) => {
+      product.imageUrl = res;
+      this.productService.update(product).subscribe(() => {
+        this.dialogRef.close(true);
+      });
+      console.log("filename: " + res);
     });
   }
 

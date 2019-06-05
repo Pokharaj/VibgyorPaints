@@ -16,7 +16,7 @@
           *ngFor="let product of themeForm.get('material').value"
           [removable]="removable"
           (removed)="remove(product)">
-          {{product.name}}
+          {{product.productName}}
           <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
         </mat-chip>
         <input
@@ -29,7 +29,7 @@
       </mat-chip-list>
       <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
         <mat-option *ngFor="let product of productslist | async" [value]="product">
-          {{product.name}}
+          {{product.productName}}
         </mat-option>
       </mat-autocomplete>
       <mat-error *ngIf="themeForm.get('material').invalid">Atleast 1 Material for Theme is Required</mat-error>

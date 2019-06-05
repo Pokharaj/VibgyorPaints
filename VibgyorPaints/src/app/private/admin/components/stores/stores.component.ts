@@ -5,7 +5,6 @@ import { StoresService } from 'src/app/core/services/stores.service';
 import { StoreFormComponent } from '../store-form/store-form.component';
 import { SnackbarService } from 'src/app/core/services/snackbar.service';
 import { Subscription } from 'rxjs';
-import { storage } from 'firebase';
 
 @Component({
   templateUrl: './stores.component.html',

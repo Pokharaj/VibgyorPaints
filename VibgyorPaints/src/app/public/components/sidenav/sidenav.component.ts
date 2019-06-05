@@ -40,7 +40,7 @@ export class SidenavComponent implements OnInit {
     this.store.pipe(select(getLoggedInUser)).subscribe((user) => {
       if (user) {
         this.loggedIn = true;
-        this.adminuser = user.role.role === USER.admin;
+        this.adminuser = user.role.role === USER.ADMIN;
         this.showThemes = user.role.role !== USER.B2B;
       } else {
         this.loggedIn = false;

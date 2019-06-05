@@ -1,13 +1,14 @@
-import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
-import { UserService } from 'src/app/core/services/user.service';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { MatTableDataSource, MatPaginator, MatTabChangeEvent, MatDialog } from '@angular/material';
-import { Products } from 'src/app/core/models/products';
-import * as firebase from 'firebase';
+import { Product } from 'src/app/core/models/product';
+// import * as firebase from 'firebase';
 import { Subscription } from 'rxjs';
-import { Themes } from 'src/app/core/models/themes';
+import { Theme } from 'src/app/core/models/theme';
 import { NewProductFormComponent } from '../new-product-form/new-product-form.component';
 import { SnackbarService } from 'src/app/core/services/snackbar.service';
 import { NewThemeFormComponent } from '../new-theme-form/new-theme-form.component';
+import { ProductService } from 'src/app/core/services/product.service';
+import { ThemeService } from 'src/app/core/services/theme.service';
 
 @Component({
   selector: 'app-products',
@@ -19,24 +20,26 @@ export class ProductsComponent implements OnInit, OnDestroy {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   displayedProductColumns: string[] = ['name', 'price', 'deleted', 'edit'];
   displayedThemeColumns: string[] = ['name', 'price', 'material', 'deleted', 'edit'];
-  productslist: Products[];
-  themeslist: Themes[];
-  productsDataSource: MatTableDataSource<Products>;
-  themeDataSource: MatTableDataSource<Themes>;
-  storageRef: firebase.storage.Reference;
+  productslist: Product[];
+  themeslist: Theme[];
+  productsDataSource: MatTableDataSource<Product>;
+  themeDataSource: MatTableDataSource<Theme>;
+  // storageRef: firebase.storage.Reference;
   subscriptions: Subscription[];
   isLoading = true;
   productsPage = true;
 
-  constructor(private userservice: UserService,
-              private dialog: MatDialog,
-              private snakbarservice: SnackbarService) {
-    this.storageRef = firebase.storage().ref();
-    this.subscriptions = [];
+  constructor(private productService: ProductService,
+    private themeService: ThemeService,
+    private dialog: MatDialog,
+    private snakbarservice: SnackbarService) {
   }
 
   ngOnInit() {
-    this.loadData();
+    // this.storageRef = firebase.storage().ref();
+    this.subscriptions = [];
+    this.loadProductData();
+    this.loadThemeData();
   }
 
   ngOnDestroy() {
@@ -45,57 +48,40 @@ export class ProductsComponent implements OnInit, OnDestroy {
     });
   }
 
-  loadData(): void {
-    let sub = this.userservice.getData('products').subscribe(res => {
-      this.productslist = [];
-      for (const [key, value] of Object.entries(res.payload.val())) {
-        this.productslist.push({
-          key,
-          id: value.id,
-          imageURL: value.imageURL,
-          name: value.name,
-          price: value.price,
-          isDeleted: value.isDeleted,
-          checked: false,
-          quantity: -1
-        });
-      }
-      this.productsDataSource = new MatTableDataSource<Products>(this.productslist);
+  loadProductData(): void {
+    this.productslist = [];
+    let sub = this.productService.getProducts().subscribe((products: Product[]) => {
+      this.productslist = products;
+      this.productsDataSource = new MatTableDataSource<Product>(this.productslist);
       this.productsDataSource.paginator = this.paginator;
     });
+    this.subscriptions.push(sub);
+  }
 
-    sub = this.userservice.getData('themes').subscribe((res) => {
-      this.themeslist = [];
-      for (const [key, value] of Object.entries(res.payload.val())) {
-        const theme: Themes = {
-          key,
-          id: value.id,
-          imageURL: value.imageURL,
-          name: value.name,
-          isDeleted: value.isDeleted,
-          price: null,
-          material: []
-        };
-        this.getThemeMaterialsAndPrice(this.productslist, theme, value.material);
-        this.themeslist.push(theme);
-      }
-      this.themeDataSource = new MatTableDataSource<Themes>(this.themeslist);
+  loadThemeData(): void {
+    this.themeslist = [];
+    const sub = this.themeService.getThemes().subscribe((themes: Theme[]) => {
+      this.themeslist = themes;
+      this.themeDataSource = new MatTableDataSource<Theme>(this.themeslist);
       this.isLoading = false;
     });
     this.subscriptions.push(sub);
   }
 
-  getThemeMaterialsAndPrice(products, theme, materials) {
-    const materialsArray: Products[] = [];
-    let themePrice = 0;
-    products.filter(res => {
-      if (materials.includes(res.id)) {
-        themePrice += +res.price;
-        materialsArray.push(res);
-      }
+  calculatePrice(products: Product[]): number {
+    let price = 0;
+    products.forEach((product: Product) => {
+      price += product.price;
     });
-    theme.material = materialsArray;
-    theme.price = themePrice;
+    return price;
+  }
+
+  getMaterialDescription(products: Product[]) {
+    let result = '';
+    products.forEach((product: Product) => {
+      result += product.productName + ', ';
+    });
+    return result.substring(0, result.length - 3);
   }
 
   tabChangeEvent(tabChangeEvent: MatTabChangeEvent): void {
@@ -115,35 +101,29 @@ export class ProductsComponent implements OnInit, OnDestroy {
     }
   }
 
-  getMaterialsString(materials: Products[]) {
-    let result = '';
-    materials.forEach((element) => {
-      result += element.name + ', ';
-    });
-    return result.substring(0, result.length - 3);
-  }
-
-  openProductsForm(product: Products) {
+  openProductsForm(product: Product) {
     const productDialogRef = this.dialog.open(NewProductFormComponent, {
       width: '400px',
-      data: { data: product, newid: this.productslist.length }
+      data: { product }
     });
 
     this.subscriptions.push(productDialogRef.afterClosed().subscribe(result => {
       if (result === true) {
+        this.loadProductData();
         this.snakbarservice.openSnackBar('Product Details Saved', 'Close', 2000);
       }
     }));
   }
 
-  openThemesForm(theme: Themes) {
+  openThemesForm(theme: Theme) {
     const themeDialogRef = this.dialog.open(NewThemeFormComponent, {
       width: '400px',
-      data: { data: theme, newid: this.themeslist.length, products: this.productslist }
+      data: { theme, products: this.productslist }
     });
 
     this.subscriptions.push(themeDialogRef.afterClosed().subscribe(result => {
       if (result === true) {
+        this.loadThemeData();
         this.snakbarservice.openSnackBar('Theme Details Saved', 'Close', 2000);
       }
     }));

@@ -9,15 +9,15 @@
       <mat-card-header>
         <mat-card-title>
           <img *ngIf="loading" src=".\assets\Images\loader.gif" style="width: 60%;" alt="loading">
-          <img [hidden]="loading" class="themeImage" (load)="this.loading = false" src="{{ theme.imageURL }}"
-            [alt]="theme.name" (click)="openPopUp(theme.imageURL)"
+          <img [hidden]="loading" class="themeImage" (load)="this.loading = false" src="{{ theme.imageUrl }}"
+            [alt]="theme.name" (click)="openPopUp(theme.imageUrl)"
             (error)="imageLoadError(theme)"/>
         </mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        <b>Name: </b>{{theme.name}}
-        <br><b>Price: </b>{{theme.price}}
-        <br><b>Material: </b>{{ getMaterialsString(theme.material) }}
+        <b>Name: </b>{{theme.themeName}}
+        <br><b>Price: </b>{{calculatePrice(theme.materials)}}
+        <br><b>Material: </b>{{ getMaterialsDescription(theme.materials) }}
       </mat-card-content>
       <mat-card-actions>
         <button mat-raised-button (click)="showEstimates(theme)"

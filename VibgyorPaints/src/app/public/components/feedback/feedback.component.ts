@@ -40,7 +40,7 @@ export class FeedbackComponent implements OnInit, OnDestroy {
       if (user) {
         this.isLoggedIn = true;
         this.user = user;
-        if (user.role.role === USER.admin) {
+        if (user.role.role === USER.ADMIN) {
           this.isAdmin = true;
         } else {
           this.isAdmin = false;

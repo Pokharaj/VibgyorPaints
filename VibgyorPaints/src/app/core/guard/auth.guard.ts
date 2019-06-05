@@ -10,7 +10,6 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Store, select } from '@ngrx/store';
 import { UserState, getLoggedInUser } from '../state/reducers/user.reducer';
-import { User } from 'firebase';
 import { USER } from 'src/app/shared/constants';
 
 @Injectable({
@@ -29,7 +28,7 @@ export class AuthGuard implements CanActivate {
     | Promise<boolean | UrlTree> {
 
       return this.store.pipe(select(getLoggedInUser)).pipe(map((user) => {
-      if (user && user.role.role !== USER.admin) {
+      if (user && user.role.role !== USER.ADMIN) {
         return true;
       } else {
         this.router.navigate(['/home']);
