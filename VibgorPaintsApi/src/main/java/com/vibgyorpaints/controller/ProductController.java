@@ -1,11 +1,18 @@
 package com.vibgyorpaints.controller;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Base64;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.CacheControl;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,7 +43,7 @@ public class ProductController {
 	}
 
 	@RequestMapping(value = "file/upload", method = RequestMethod.POST)
-	public String upload(@RequestParam("file") MultipartFile file) {
+	public String uploadImage(@RequestParam("file") MultipartFile file) {
 		String filename = fileService.createFileName(file.getOriginalFilename());
 		File convertedFile = new File(filelocation + filename);
 		try {
@@ -48,6 +55,22 @@ public class ProductController {
 			e.printStackTrace();
 		}
 		return filename;
+	}
+
+	@RequestMapping(value = "file/download/{filename}", method = RequestMethod.GET)
+	public ResponseEntity<String> downloadImage(@PathVariable("filename") String filename) throws IOException {
+		File file = new File(filelocation + filename);
+		FileInputStream fileInputStream = new FileInputStream(file);
+		byte[] bytes = new byte[(int) file.length()];
+		fileInputStream.read(bytes);
+		String encodeBase64 = Base64.getEncoder().encodeToString(bytes);
+		String image = "data:image/" + filename.substring(filename.lastIndexOf(".") + 1) + ";base64," + encodeBase64;
+		fileInputStream.close();
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setCacheControl(CacheControl.noCache().getHeaderValue());
+
+		return new ResponseEntity<String>(image, headers, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "product", method = RequestMethod.POST)

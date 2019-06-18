@@ -26,6 +26,10 @@ export class ProductService {
     return this.http.post(environment.DATA_URL + 'file/upload', formData, {responseType: 'text'});
   }
 
+  download(filename: string) {
+    return this.http.get(environment.DATA_URL + 'file/download/' + filename);
+  }
+
   create(product: Product) {
     const body = JSON.stringify(product);
     return this.http.post(environment.DATA_URL + 'product', body, httpOptions);

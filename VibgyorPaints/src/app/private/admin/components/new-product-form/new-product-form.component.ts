@@ -26,6 +26,9 @@ export class NewProductFormComponent implements OnInit {
                   this.loading = true;
                   this.product = data.product;
                   // this.productThemeService.getImage(this.product.imageUrl).then(url => this.imageSrc = url);
+                  this.productService.download("021559928779180.jpg").subscribe(image => {
+                    this.imageSrc = image;
+                  })
                 } else {
                   this.imageSrc = './assets/Images/PlaceholderImage150.png';
                 }
