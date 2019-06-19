@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { select, Store } from '@ngrx/store';
-// import * as firebase from 'firebase';
 import { Product } from 'src/app/core/models/product';
 import { getLoggedInUser, UserState } from 'src/app/core/state/reducers/user.reducer';
 import { LoginComponent } from 'src/app/public/components/login/login.component';
@@ -25,20 +24,18 @@ export class ProductComponent implements OnInit, OnDestroy {
   }
 
   products: Product[];
-  // storageRef: firebase.storage.Reference;
   isLoggedIn = false;
   quantities: number[];
   loading = true;
 
   ngOnInit() {
-    // this.storageRef = firebase.storage().ref();
     this.subscriptions = [];
     this.loadData();
     this.init();
   }
 
   ngOnDestroy(): void {
-    if(this.subscriptions) {
+    if (this.subscriptions) {
       this.subscriptions.forEach(sub => {
         sub.unsubscribe();
       });
@@ -49,11 +46,7 @@ export class ProductComponent implements OnInit, OnDestroy {
     const sub = this.productService.getProducts().subscribe((products: Product[]) => {
       this.products = products;
       this.products.forEach((product: Product) => {
-        // this.storageRef.child(product.imageUrl).getDownloadURL().then(url => {
-        //   product.imageUrl = url;
-        // }).catch(err => {
-          product.imageUrl = './assets/Images/PlaceholderImage150.png';
-        // });
+        product.imageUrl = this.productService.getImageUrl(product.imageUrl);
       });
     });
     this.subscriptions.push(sub);

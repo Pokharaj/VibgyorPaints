@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { environment } from 'src/environments/environment.prod';
 import { Product } from '../models/product';
 
@@ -11,7 +11,7 @@ const httpOptions = {
   providedIn: 'root'
 })
 export class ProductService {
-  
+
   constructor(private http: HttpClient) {}
 
   getProducts() {
@@ -26,8 +26,8 @@ export class ProductService {
     return this.http.post(environment.DATA_URL + 'file/upload', formData, {responseType: 'text'});
   }
 
-  download(filename: string) {
-    return this.http.get(environment.DATA_URL + 'file/download/' + filename);
+  getImageUrl(filename: string) {
+    return environment.DATA_URL + 'file/download/' + filename;
   }
 
   create(product: Product) {

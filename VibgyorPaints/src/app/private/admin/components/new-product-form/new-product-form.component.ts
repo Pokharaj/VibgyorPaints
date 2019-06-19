@@ -25,17 +25,15 @@ export class NewProductFormComponent implements OnInit {
                 if (data.product) {
                   this.loading = true;
                   this.product = data.product;
-                  // this.productThemeService.getImage(this.product.imageUrl).then(url => this.imageSrc = url);
-                  this.productService.download("021559928779180.jpg").subscribe(image => {
-                    this.imageSrc = image;
-                  })
+                  this.imageSrc = this.productService.getImageUrl(this.product.imageUrl);
                 } else {
+                  // this.imageSrc = this.productService.getImageUrl('021559928779180.jpg');
                   this.imageSrc = './assets/Images/PlaceholderImage150.png';
                 }
               }
 
   ngOnInit() {
-    if(this.product) {
+    if (this.product) {
       this.productForm = this.fb.group({
         name: [this.product.productName, Validators.required],
         price: [this.product.price, [Validators.required, Validators.pattern('^[0-9]*$')]],
@@ -61,14 +59,26 @@ export class NewProductFormComponent implements OnInit {
       price: this.productForm.controls.price.value
     };
     const formData = new FormData();
-    formData.append("file", this.fileInput.nativeElement.files[0]);
-    this.productService.upload(formData).subscribe((res: string) => {
-      product.imageUrl = res;
+    if (this.fileInput.nativeElement.files.length === 0) {
       this.productService.update(product).subscribe(() => {
         this.dialogRef.close(true);
       });
-      console.log("filename: " + res);
-    });
+    } else {
+      formData.append('file', this.fileInput.nativeElement.files[0]);
+      this.productService.upload(formData).subscribe((res: string) => {
+        product.imageUrl = res;
+        if (this.product) {
+          this.productService.update(product).subscribe(() => {
+            this.dialogRef.close(true);
+          });
+        } else {
+          this.productService.create(product).subscribe(() => {
+            this.dialogRef.close(true);
+          });
+        }
+        console.log('filename: ' + res);
+      });
+    }
   }
 
   cancel() {

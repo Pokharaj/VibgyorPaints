@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { MatTableDataSource, MatPaginator, MatTabChangeEvent, MatDialog } from '@angular/material';
 import { Product } from 'src/app/core/models/product';
-// import * as firebase from 'firebase';
 import { Subscription } from 'rxjs';
 import { Theme } from 'src/app/core/models/theme';
 import { NewProductFormComponent } from '../new-product-form/new-product-form.component';
@@ -24,15 +23,14 @@ export class ProductsComponent implements OnInit, OnDestroy {
   themeslist: Theme[];
   productsDataSource: MatTableDataSource<Product>;
   themeDataSource: MatTableDataSource<Theme>;
-  // storageRef: firebase.storage.Reference;
   subscriptions: Subscription[];
   isLoading = true;
   productsPage = true;
 
   constructor(private productService: ProductService,
-    private themeService: ThemeService,
-    private dialog: MatDialog,
-    private snakbarservice: SnackbarService) {
+              private themeService: ThemeService,
+              private dialog: MatDialog,
+              private snakbarservice: SnackbarService) {
   }
 
   ngOnInit() {
@@ -50,7 +48,7 @@ export class ProductsComponent implements OnInit, OnDestroy {
 
   loadProductData(): void {
     this.productslist = [];
-    let sub = this.productService.getProducts().subscribe((products: Product[]) => {
+    const sub = this.productService.getProducts().subscribe((products: Product[]) => {
       this.productslist = products;
       this.productsDataSource = new MatTableDataSource<Product>(this.productslist);
       this.productsDataSource.paginator = this.paginator;
