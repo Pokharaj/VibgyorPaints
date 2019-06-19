@@ -1,5 +1,4 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-// import * as firebase from 'firebase';
 import { Theme } from 'src/app/core/models/theme';
 import { ImagePopUpService } from '../../services/image-pop-up.service';
 import { EstimatesService } from '../../services/estimates.service';
@@ -20,7 +19,6 @@ import { ThemeService } from 'src/app/core/services/theme.service';
 export class ThemesComponent implements OnInit, OnDestroy {
 
   themeslist: Theme[];
-  // storageRef: firebase.storage.Reference;
   isLoggedIn = false;
   loading = true;
   subscriptions: Subscription[];
@@ -33,7 +31,6 @@ export class ThemesComponent implements OnInit, OnDestroy {
               ) { }
 
   ngOnInit() {
-    // this.storageRef = firebase.storage().ref();
     this.themeslist = [];
     this.subscriptions = [];
     const sub = this.store.pipe(select(getLoggedInUser)).subscribe((user) => {
@@ -94,7 +91,6 @@ export class ThemesComponent implements OnInit, OnDestroy {
       data: { product: false }
     });
 
-    // TODO: Unsubscribe
     const sub = dialogRef.afterClosed().subscribe(result => {
       if (result === true) {
         // this.loadData();
@@ -112,5 +108,9 @@ export class ThemesComponent implements OnInit, OnDestroy {
 
   imageLoadError(product: Product): void {
     product.imageUrl = './assets/Images/Placeholder240x210.png';
+  }
+
+  getImageUrl(filename: string): string {
+    return this.themeService.getImageUrl(filename);
   }
 }

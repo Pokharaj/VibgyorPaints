@@ -18,6 +18,14 @@ export class ThemeService {
     return this.http.get(environment.DATA_URL + 'themes');
   }
 
+  upload(formData: FormData) {
+    return this.http.post(environment.DATA_URL + 'theme/file/upload', formData, {responseType: 'text'});
+  }
+
+  getImageUrl(filename: string) {
+    return environment.DATA_URL + 'theme/file/download/' + filename;
+  }
+
   getTheme(id: number) {
     return this.http.get(environment.DATA_URL + 'theme/' + id);
   }

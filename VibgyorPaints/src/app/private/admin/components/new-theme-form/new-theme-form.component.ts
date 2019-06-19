@@ -36,7 +36,7 @@ export class NewThemeFormComponent implements OnInit {
       this.loading = true;
       this.theme = data.theme;
       this.products = this.theme.materials;
-      // this.productThemeService.getImage(this.theme.imageUrl).then(url => this.imageSrc = url);
+      this.imageSrc = this.themeService.getImageUrl(this.theme.imageUrl);
     } else {
       this.imageSrc = './assets/Images/PlaceholderImage150.png';
       this.theme = {
@@ -72,19 +72,33 @@ export class NewThemeFormComponent implements OnInit {
   save() {
     const theme: Theme = {
       id: this.theme ? this.theme.id : null,
-      imageUrl: this.themeForm.controls.image.dirty
-                ? 'images/themes/' + this.themeForm.controls.name.value.replace(/\s/g, '') + '.jpg'
-                : this.theme.imageUrl,
+      imageUrl: this.theme ? this.theme.imageUrl: null,
       deleted: this.theme ? !this.themeForm.controls.active.value : false,
       themeName: this.themeForm.controls.name.value,
       materials: this.themeForm.controls.material.value.map(product => product)
     };
 
-    // this.productThemeService.saveImage(theme.imageUrl, this.themeForm.controls.image.dirty
-    //   ? this.fileInput.nativeElement.files[0] : '');
-    this.themeService.create(theme).subscribe(() => {
-      this.dialogRef.close(true);
-    });
+    const formData = new FormData();
+    if (this.fileInput.nativeElement.files.length === 0) {
+      this.themeService.update(theme).subscribe(() => {
+        this.dialogRef.close(true);
+      });
+    } else {
+      formData.append('file', this.fileInput.nativeElement.files[0]);
+      this.themeService.upload(formData).subscribe((res: string) => {
+        theme.imageUrl = res;
+        if (this.theme.id) {
+          this.themeService.update(theme).subscribe(() => {
+            this.dialogRef.close(true);
+          });
+        } else {
+          this.themeService.create(theme).subscribe(() => {
+            this.dialogRef.close(true);
+          });
+        }
+        console.log('filename: ' + res);
+      });
+    }
   }
 
   cancel() {

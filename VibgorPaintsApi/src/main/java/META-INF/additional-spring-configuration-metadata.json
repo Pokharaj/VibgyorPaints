@@ -1,0 +1,12 @@
+{"properties": [
+  {
+    "name": "product.image.path",
+    "type": "java.lang.String",
+    "description": "A description for 'product.image.path'"
+  },
+  {
+    "name": "theme.image.path",
+    "type": "java.lang.String",
+    "description": "A description for 'theme.image.path'"
+  }
+]}

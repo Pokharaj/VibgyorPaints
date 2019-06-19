@@ -9,8 +9,8 @@
       <mat-card-header>
         <mat-card-title>
           <img *ngIf="loading" src=".\assets\Images\loader.gif" style="width: 60%;" alt="loading">
-          <img [hidden]="loading" class="themeImage" (load)="this.loading = false" src="{{ theme.imageUrl }}"
-            [alt]="theme.name" (click)="openPopUp(theme.imageUrl)"
+          <img [hidden]="loading" class="themeImage" (load)="this.loading = false" [src]="getImageUrl(theme.imageUrl)"
+            [alt]="theme.name" (click)="openPopUp(getImageUrl(theme.imageUrl))"
             (error)="imageLoadError(theme)"/>
         </mat-card-title>
       </mat-card-header>
