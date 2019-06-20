@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from 'src/environments/environment.prod';
 import { Product } from '../models/product';
 
@@ -18,16 +18,22 @@ export class ProductService {
     return this.http.get(environment.DATA_URL + 'products');
   }
 
+  getProductsByIdList(idList: number[]) {
+    const body = JSON.stringify(idList);
+    return this.http.post(environment.DATA_URL + 'products/byIdList', body, httpOptions);
+  }
+
   getProduct(id: number) {
     return this.http.get(environment.DATA_URL + 'product/' + id);
   }
 
   upload(formData: FormData) {
-    return this.http.post(environment.DATA_URL + 'file/upload', formData, {responseType: 'text'});
+    return this.http.post(environment.DATA_URL + 'product/file/upload',
+                          formData, {responseType: 'text'});
   }
 
   getImageUrl(filename: string) {
-    return environment.DATA_URL + 'file/download/' + filename;
+    return environment.DATA_URL + 'product/file/download/' + filename;
   }
 
   create(product: Product) {

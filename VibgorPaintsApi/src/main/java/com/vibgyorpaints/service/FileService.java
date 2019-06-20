@@ -46,7 +46,7 @@ public class FileService {
 		return fileName;
 	}
 
-	public String saveProjectImage(MultipartFile file) {
+	public String saveProductImage(MultipartFile file) {
 		return saveFile(file, productImagePath);
 	}
 

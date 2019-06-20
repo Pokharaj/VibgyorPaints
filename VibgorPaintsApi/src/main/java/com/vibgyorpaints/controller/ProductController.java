@@ -3,6 +3,7 @@ package com.vibgyorpaints.controller;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,11 @@ public class ProductController {
 		return productService.getProducts();
 	}
 
+	@RequestMapping(value = "products/byIdList", method = RequestMethod.POST)
+	public List<Product> getProductsByIdList(@RequestBody Integer[] products) {
+		return productService.findByIdList(Arrays.asList(products));
+	}
+
 	@RequestMapping(value = "product", method = RequestMethod.POST)
 	public Product create(@RequestBody Product product) {
 		return productService.createProduct(product);
@@ -51,12 +57,12 @@ public class ProductController {
 		return productService.update(id, product);
 	}
 
-	@RequestMapping(value = "file/upload", method = RequestMethod.POST)
+	@RequestMapping(value = "product/file/upload", method = RequestMethod.POST)
 	public String uploadImage(@RequestParam("file") MultipartFile file) {
-		return fileService.saveProjectImage(file);
+		return fileService.saveProductImage(file);
 	}
 
-	@RequestMapping(value = "file/download/{filename}", method = RequestMethod.GET)
+	@RequestMapping(value = "product/file/download/{filename}", method = RequestMethod.GET)
 	public ResponseEntity<InputStreamResource> downloadImage(@PathVariable("filename") String filename)
 			throws IOException {
 		File file = fileService.getProductFile(filename);

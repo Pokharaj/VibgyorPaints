@@ -1,8 +1,10 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA, MatTableDataSource } from '@angular/material';
-import { EstimatesService } from '../../services/estimates.service';
 import { Product } from 'src/app/core/models/product';
 import { Theme } from 'src/app/core/models/theme';
+import { ProductState, getSelectedProducts, getSelectedTheme } from '../../state/reducers/prouct.reducer';
+import { Store, select } from '@ngrx/store';
+import { ClearSelectedTheme } from '../../state/product.action';
 
 @Component({
   selector: 'app-estimates-dialog',
@@ -14,9 +16,10 @@ export class EstimatesDialogComponent implements OnInit {
   products: Product[];
   theme: Theme;
   isProduct: boolean;
-  displayedColumns: string[];;
+  displayedColumns: string[];
   dataSource: MatTableDataSource<Product>;
-  constructor(private estimates: EstimatesService,
+
+  constructor(private productStore: Store<ProductState>,
               public dialogRef: MatDialogRef<EstimatesDialogComponent>,
               @Inject(MAT_DIALOG_DATA) public data
     ) {
@@ -29,13 +32,18 @@ export class EstimatesDialogComponent implements OnInit {
 
   loadData(): void {
     if (this.isProduct) {
+      this.products = [];
       this.displayedColumns = ['name', 'qty', 'price', 'total'];
-      this.products = this.estimates.products;
-      this.dataSource = new MatTableDataSource<Product>(this.products);
+      this.productStore.pipe(select(getSelectedProducts)).subscribe((products: Product[]) => {
+        this.products = products;
+        this.dataSource = new MatTableDataSource<Product>(this.products);
+      });
     } else {
       this.displayedColumns = ['name', 'price'];
-      this.theme = this.estimates.theme;
-      this.dataSource = new MatTableDataSource<Product>(this.theme.materials);
+      this.productStore.pipe(select(getSelectedTheme)).subscribe((theme: Theme) => {
+        this.theme = theme;
+        this.dataSource = new MatTableDataSource<Product>(this.theme.materials);
+      });
     }
   }
 
@@ -47,14 +55,14 @@ export class EstimatesDialogComponent implements OnInit {
       });
     } else {
       this.theme.materials.forEach((element) => {
-        total += (element.price * element.quantity);
+        total += (element.price);
       });
     }
     return total;
   }
 
   cancel(): void {
-    this.estimates.selectTheme(null);
+    this.productStore.dispatch(new ClearSelectedTheme());
     this.dialogRef.close(null);
   }
 

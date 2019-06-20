@@ -14,4 +14,5 @@ public interface ProductService {
 
 	Product update(Long id, Product product);
 
+	List<Product> findByIdList(List<Integer> idList);
 }

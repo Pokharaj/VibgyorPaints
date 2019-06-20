@@ -157,7 +157,7 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
     if (Object.keys(this.validation).length === 0) {
       const newuser = this.createUserObject(this.form.controls.SignUpForm.value);
       this.userService.create(newuser).subscribe((user: User) => {
-        if(user != undefined && user != null) {
+        if (user !== undefined && user != null) {
           this.postLoginSteps(user);
         } else {
           this.validation.emailid = "Please enter a valid email";

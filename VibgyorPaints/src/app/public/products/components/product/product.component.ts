@@ -5,10 +5,11 @@ import { Product } from 'src/app/core/models/product';
 import { getLoggedInUser, UserState } from 'src/app/core/state/reducers/user.reducer';
 import { LoginComponent } from 'src/app/public/components/login/login.component';
 import { USER } from 'src/app/shared/constants';
-import { EstimatesService } from '../../services/estimates.service';
 import { EstimatesDialogComponent } from '../estimates-dialog/estimates-dialog.component';
 import { Subscription } from 'rxjs';
 import { ProductService } from 'src/app/core/services/product.service';
+import { ProductState } from '../../state/reducers/prouct.reducer';
+import { SetSelectedProducts, ClearSelectedProducts } from '../../state/product.action';
 
 @Component({
   templateUrl: './product.component.html',
@@ -18,8 +19,8 @@ export class ProductComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[];
 
   constructor(private productService: ProductService,
-              private estimates: EstimatesService,
               private store: Store<UserState>,
+              private productStore: Store<ProductState>,
               private dialog: MatDialog) {
   }
 
@@ -43,10 +44,14 @@ export class ProductComponent implements OnInit, OnDestroy {
   }
 
   loadData(): void {
+    this.productStore.dispatch(new ClearSelectedProducts());
     const sub = this.productService.getProducts().subscribe((products: Product[]) => {
       this.products = products;
       this.products.forEach((product: Product) => {
         product.imageUrl = this.productService.getImageUrl(product.imageUrl);
+        if (!product.quantity) {
+          product.quantity = 1;
+        }
       });
     });
     this.subscriptions.push(sub);
@@ -60,8 +65,6 @@ export class ProductComponent implements OnInit, OnDestroy {
           this.quantities = [1, 2, 3, 4, 5];
         } else if (user.role.role === USER.B2B) {
           this.quantities = [10, 20, 30, 40, 50];
-        } else if (user.role.role === USER.ADMIN) {
-          this.quantities = [1, 2, 3, 4, 5, 10, 20, 30, 40, 50];
         } else {
           this.quantities = [1, 2, 3, 4, 5];
         }
@@ -73,7 +76,7 @@ export class ProductComponent implements OnInit, OnDestroy {
   }
 
   checkChange(product: Product): void {
-    this.estimates.addRemoveProduct(product);
+    this.productStore.dispatch(new SetSelectedProducts(product));
   }
 
   showEstimates(): void {

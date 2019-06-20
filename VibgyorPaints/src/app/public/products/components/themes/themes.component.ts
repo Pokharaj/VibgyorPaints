@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Theme } from 'src/app/core/models/theme';
 import { ImagePopUpService } from '../../services/image-pop-up.service';
-import { EstimatesService } from '../../services/estimates.service';
 import { MatDialog } from '@angular/material';
 import { EstimatesDialogComponent } from '../estimates-dialog/estimates-dialog.component';
 import { Product } from 'src/app/core/models/product';
@@ -10,6 +9,8 @@ import { Store, select } from '@ngrx/store';
 import { UserState, getLoggedInUser } from 'src/app/core/state/reducers/user.reducer';
 import { Subscription } from 'rxjs';
 import { ThemeService } from 'src/app/core/services/theme.service';
+import { ProductState } from '../../state/reducers/prouct.reducer';
+import { SetSelectedTheme } from '../../state/product.action';
 
 @Component({
   selector: 'app-themes',
@@ -25,8 +26,8 @@ export class ThemesComponent implements OnInit, OnDestroy {
 
   constructor(private themeService: ThemeService,
               private imagePopService: ImagePopUpService,
-              private estimates: EstimatesService,
               private store: Store<UserState>,
+              private productStore: Store<ProductState>,
               private dialog: MatDialog
               ) { }
 
@@ -45,7 +46,7 @@ export class ThemesComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if(this.subscriptions) {
+    if (this.subscriptions) {
       this.subscriptions.forEach(sub => {
         sub.unsubscribe();
       });
@@ -81,7 +82,7 @@ export class ThemesComponent implements OnInit, OnDestroy {
   }
 
   showEstimates(theme: Theme): void {
-    this.estimates.selectTheme(theme);
+    this.productStore.dispatch(new SetSelectedTheme(theme));
     this.openDialog();
   }
 
@@ -98,7 +99,7 @@ export class ThemesComponent implements OnInit, OnDestroy {
     });
     this.subscriptions.push(sub);
   }
-  
+
   login(): void {
     this.dialog.open(LoginComponent, {
       width: '500px',

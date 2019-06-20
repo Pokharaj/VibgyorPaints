@@ -7,6 +7,8 @@ import { ThemesComponent } from './components/themes/themes.component';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ImagePopUpComponent } from './components/image-pop-up/image-pop-up.component';
 import { EstimatesDialogComponent } from './components/estimates-dialog/estimates-dialog.component';
+import { StoreModule } from '@ngrx/store';
+import { productReducer } from './state/reducers/prouct.reducer';
 
 @NgModule({
   declarations: [
@@ -18,7 +20,8 @@ import { EstimatesDialogComponent } from './components/estimates-dialog/estimate
   imports: [
     CommonModule,
     ProductsRoutingModule,
-    SharedModule
+    SharedModule,
+    StoreModule.forFeature('product', productReducer),
   ],
   entryComponents: [
     EstimatesDialogComponent

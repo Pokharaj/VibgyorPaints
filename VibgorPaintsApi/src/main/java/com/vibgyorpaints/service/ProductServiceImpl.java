@@ -37,4 +37,9 @@ public class ProductServiceImpl implements ProductService {
 		return productRepository.saveAndFlush(existingProduct);
 	}
 
+	@Override
+	public List<Product> findByIdList(List<Integer> idList) {
+		return productRepository.findAllByIdList(idList);
+	}
+
 }
